@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+ <class>TrainDialog</class>
+ <widget class="QDialog" name="TrainDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>360</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout">
+   <item>
+    <layout class="QFormLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label0">
+       <property name="text">
+        <string>Mã tàu *:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="leId">
+       <property name="placeholderText">
+        <string>KH1 hoặc HH1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label1">
+       <property name="text">
+        <string>Tên tàu *:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="leName">
+       <property name="placeholderText">
+        <string></string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label2">
+       <property name="text">
+        <string>Loại tàu:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="cbType">
+       <item>
+        <property name="text">
+         <string>Tàu khách</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tàu hàng</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label3">
+       <property name="text">
+        <string>Sức chứa:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="sbCapacity">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="value">
+        <number>200</number>
+       </property>
+       <property name="suffix">
+        <string></string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label4">
+       <property name="text">
+        <string>Tốc độ tối đa:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="dsbSpeed">
+       <property name="minimum">
+        <double>1.000000</double>
+       </property>
+       <property name="maximum">
+        <double>999.000000</double>
+       </property>
+       <property name="value">
+        <double>120.000000</double>
+       </property>
+       <property name="suffix">
+        <string> km/h</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label5">
+       <property name="text">
+        <string>Trạng thái:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="cbStatus">
+       <item>
+        <property name="text">
+         <string>Hoạt động</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tạm ngưng</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bảo trì</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources />
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>TrainDialog</receiver>
+   <slot>accept()</slot>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>TrainDialog</receiver>
+   <slot>reject()</slot>
+  </connection>
+ </connections>
+</ui>

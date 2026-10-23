@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>760</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Hệ thống điều phối lịch chạy tàu</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <item>
+     <widget class="QLabel" name="titleLabel">
+      <property name="text">
+       <string>QUẢN LÝ VÀ ĐIỀU PHỐI LỊCH CHẠY TÀU</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="statsLayout">
+      <item>
+       <widget class="QLabel" name="statTrain">
+        <property name="text">
+         <string>Tàu: 0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="statStation">
+        <property name="text">
+         <string>Ga: 0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="statRoute">
+        <property name="text">
+         <string>Tuyến: 0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="statSchedule">
+        <property name="text">
+         <string>Lịch chạy: 0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="contentLayout">
+      <item>
+       <widget class="QListWidget" name="navigationList">
+        <property name="minimumSize">
+         <size>
+          <width>175</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>175</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="currentRow">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Quản lý tàu</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Quản lý nhà ga</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Quản lý tuyến đường</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Lịch chạy</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Tìm đường</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Kiểm tra xung đột</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hàng chờ</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="trainTab">
+         <layout class="QVBoxLayout">
+          <item>
+           <widget class="QTableWidget" name="trainTable" />
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnAddTrain">
+              <property name="text">
+               <string>Thêm tàu</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnEditTrain">
+              <property name="text">
+               <string>Sửa tàu</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDeleteTrain">
+              <property name="text">
+               <string>Xóa tàu</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRefreshTrain">
+              <property name="text">
+               <string>Cập nhật</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="stationTab">
+         <layout class="QVBoxLayout">
+          <item>
+           <widget class="QTableWidget" name="stationTable" />
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnAddStation">
+              <property name="text">
+               <string>Thêm ga</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnEditStation">
+              <property name="text">
+               <string>Sửa ga</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDeleteStation">
+              <property name="text">
+               <string>Xóa ga</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRefreshStation">
+              <property name="text">
+               <string>Cập nhật</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="routeTab">
+         <layout class="QVBoxLayout">
+          <item>
+           <widget class="QTableWidget" name="routeTable" />
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnAddRoute">
+              <property name="text">
+               <string>Thêm tuyến</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnEditRoute">
+              <property name="text">
+               <string>Sửa tuyến</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDeleteRoute">
+              <property name="text">
+               <string>Xóa tuyến</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRefreshRoute">
+              <property name="text">
+               <string>Cập nhật</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="scheduleTab">
+         <layout class="QVBoxLayout">
+          <item>
+           <widget class="QTableWidget" name="scheduleTable" />
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnAddSchedule">
+              <property name="text">
+               <string>Thêm lịch</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDeleteSchedule">
+              <property name="text">
+               <string>Xóa lịch</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnSortTime">
+              <property name="text">
+               <string>Sắp xếp theo giờ</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnSortPriority">
+              <property name="text">
+               <string>Sắp xếp ưu tiên</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRefreshSchedule">
+              <property name="text">
+               <string>Cập nhật</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="stopLabel">
+            <property name="text">
+             <string>Điểm dừng của lịch đang chọn</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="stopTable">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>180</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnViewStops">
+              <property name="text">
+               <string>Xem điểm dừng</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddStop">
+              <property name="text">
+               <string>Thêm điểm dừng</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDeleteStop">
+              <property name="text">
+               <string>Xóa điểm dừng</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="pathTab">
+         <layout class="QVBoxLayout">
+          <item>
+           <layout class="QFormLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="startLabel">
+              <property name="text">
+               <string>Ga bắt đầu:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="cbStart" />
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="destLabel">
+              <property name="text">
+               <string>Ga đích:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="cbDest" />
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="algoLabel">
+              <property name="text">
+               <string>Thuật toán:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="algoCombo">
+              <item>
+               <property name="text">
+                <string>BFS - Duyệt theo chiều rộng</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>DFS - Duyệt theo chiều sâu</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Dijkstra - Đường ngắn nhất</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Dijkstra - Đường nhanh nhất</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnRefreshStations">
+              <property name="text">
+               <string>Cập nhật danh sách ga</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnFindPath">
+              <property name="text">
+               <string>Tìm đường</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="pathOutput">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="conflictTab">
+         <layout class="QVBoxLayout">
+          <item>
+           <layout class="QFormLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="conflictALabel">
+              <property name="text">
+               <string>Lịch thứ nhất:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="cbConflictA" />
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="conflictBLabel">
+              <property name="text">
+               <string>Lịch thứ hai:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="cbConflictB" />
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="dispatchALabel">
+              <property name="text">
+               <string>Điều phối lịch A:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="cbDispA" />
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="dispatchBLabel">
+              <property name="text">
+               <string>Điều phối lịch B:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QComboBox" name="cbDispB" />
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="strategyLabel">
+              <property name="text">
+               <string>Chiến lược:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QComboBox" name="strategyCombo">
+              <item>
+               <property name="text">
+                <string>Theo mức ưu tiên</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Theo giờ xuất phát</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnRefreshSchedules">
+              <property name="text">
+               <string>Cập nhật danh sách</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnCheckConflict">
+              <property name="text">
+               <string>Kiểm tra xung đột</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDispatch">
+              <property name="text">
+               <string>Điều phối</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="conflictOutput">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="queueTab">
+         <layout class="QVBoxLayout">
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QPushButton" name="btnShowQueue">
+              <property name="text">
+               <string>Xem hàng chờ</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddQueue">
+              <property name="text">
+               <string>Thêm tàu vào hàng chờ</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnShowHistory">
+              <property name="text">
+               <string>Xem lịch sử</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="queueOutput">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>Tệp</string>
+    </property>
+    <addaction name="actionLoad" />
+    <addaction name="actionSave" />
+    <addaction name="separator" />
+    <addaction name="actionQuit" />
+   </widget>
+   <addaction name="menuFile" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <action name="actionLoad">
+   <property name="text">
+    <string>Đọc dữ liệu</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Lưu dữ liệu</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Thoát</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+ </widget>
+ <resources />
+ <connections />
+</ui>

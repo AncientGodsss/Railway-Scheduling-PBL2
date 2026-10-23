@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+ <class>RouteDialog</class>
+ <widget class="QDialog" name="RouteDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>360</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout">
+   <item>
+    <layout class="QFormLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label0">
+       <property name="text">
+        <string>Mã tuyến *:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="leId">
+       <property name="placeholderText">
+        <string>Ví dụ: R008</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label1">
+       <property name="text">
+        <string>Ga đầu *:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="leFrom">
+       <property name="placeholderText">
+        <string>HANOI</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label2">
+       <property name="text">
+        <string>Ga cuối *:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="leTo">
+       <property name="placeholderText">
+        <string>DANANG</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label3">
+       <property name="text">
+        <string>Khoảng cách:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="dsbDist">
+       <property name="minimum">
+        <double>0.100000</double>
+       </property>
+       <property name="maximum">
+        <double>9999.000000</double>
+       </property>
+       <property name="value">
+        <double>100.000000</double>
+       </property>
+       <property name="suffix">
+        <string> km</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label4">
+       <property name="text">
+        <string>Thời gian:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="sbTime">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="value">
+        <number>60</number>
+       </property>
+       <property name="suffix">
+        <string> phút</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label5">
+       <property name="text">
+        <string>Trạng thái:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="cbStatus">
+       <item>
+        <property name="text">
+         <string>Hoạt động</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tạm ngưng</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources />
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>RouteDialog</receiver>
+   <slot>accept()</slot>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>RouteDialog</receiver>
+   <slot>reject()</slot>
+  </connection>
+ </connections>
+</ui>

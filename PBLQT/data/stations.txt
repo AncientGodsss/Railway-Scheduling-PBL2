@@ -1,0 +1,15 @@
+BIENHOA|Biên Hòa|Miền Nam|4
+QUYNHON|Quy Nhơn|Miền Trung|3
+DALAT|Đà Lạt|Tây Nguyên|2
+VINH|Vinh|Miền Trung|4
+HUE|Huế|Miền Trung|3
+HANOI|Hà Nội|Miền Bắc|5
+BINHTHUAN|Bình Thuận|Miền Trung|3
+KHANHHOA|Khánh Hòa|Miền Trung|5
+DANANG|Đà Nẵng|Miền Trung|5
+THANHHOA|Thanh Hóa|Miền Trung|4
+DONGHOI|Đồng Hới|Miền Trung|3
+SAIGON|Sài Gòn|Miền Nam|6
+DAKLAK|Đắk Lắk|Tây Nguyên|2
+HAIPHONG|Hải Phòng|Miền Bắc|4
+LAOCAI|Lào Cai|Miền Bắc|3
