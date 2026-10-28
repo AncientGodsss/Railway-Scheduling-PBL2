@@ -17,7 +17,6 @@ private:
     int departureTime;
 
 public:
-     
     Stop()
     {
         order = 0;
@@ -25,23 +24,13 @@ public:
         departureTime = 0;
     }
 
-     
-    Stop(
-        string id,
-        int o,
-        int arrival,
-        int departure
-    )
+    Stop(string id, int o, int arrival, int departure)
     {
         stationId = id;
         order = o;
         arrivalTime = arrival;
         departureTime = departure;
     }
-
-     
-     
-     
 
     string getStationId() const
     {
@@ -62,10 +51,6 @@ public:
     {
         return departureTime;
     }
-
-     
-     
-     
 
     void setStationId(const string& id)
     {
@@ -96,26 +81,15 @@ public:
         }
     }
 
-     
-     
-     
-
     bool isValidTime() const
     {
         return departureTime >= arrivalTime;
     }
 
-     
-     
-     
-
     void displayInfo() const
     {
-        cout << "Ga: " << stationId
-             << " | Thu tu: " << order
-             << " | Den: " << TimeUtils::minutesToTime(arrivalTime)
-             << " | Di: " << TimeUtils::minutesToTime(departureTime)
-             << "\n";
+        cout << "Ga: " << stationId << " | Thu tu: " << order << " | Den: " << TimeUtils::minutesToDisplay(arrivalTime)
+             << " | Di: " << TimeUtils::minutesToDisplay(departureTime) << "\n";
     }
 };
 

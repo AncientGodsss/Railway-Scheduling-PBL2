@@ -26,11 +26,9 @@ private:
     string status;
     string departureDate;
 
-     
     StopList stops;
 
 public:
-     
     Schedule()
     {
         departureTime = 0;
@@ -40,18 +38,8 @@ public:
         departureDate = "";
     }
 
-     
-    Schedule(
-        string id,
-        string tId,
-        string departureId,
-        string destinationId,
-        int departure,
-        int arrival,
-        int p,
-        string st,
-        string depDate = ""
-    )
+    Schedule(string id, string tId, string departureId, string destinationId, int departure, int arrival, int p,
+             string st, string depDate = "")
     {
         scheduleId = id;
         trainId = tId;
@@ -67,12 +55,14 @@ public:
         departureDate = depDate;
     }
 
-    string getDepartureDate() const { return departureDate; }
-    void setDepartureDate(const string& d) { departureDate = d; }
-
-     
-     
-     
+    string getDepartureDate() const
+    {
+        return departureDate;
+    }
+    void setDepartureDate(const string& d)
+    {
+        departureDate = d;
+    }
 
     string getScheduleId() const
     {
@@ -114,7 +104,6 @@ public:
         return status;
     }
 
-     
     StopList& getStops()
     {
         return stops;
@@ -124,10 +113,6 @@ public:
     {
         return stops;
     }
-
-     
-     
-     
 
     void setTrainId(const string& id)
     {
@@ -170,41 +155,37 @@ public:
         status = st;
     }
 
-     
-     
-     
-
-     
     bool addStop(const Stop& stop)
     {
-        if (stop.getOrder() <= 0 || stop.getStationId().empty()) return false;
-        if (!stop.isValidTime()) return false;
-        if (!TimeUtils::isValidTime(stop.getArrivalTime()) ||
-            !TimeUtils::isValidTime(stop.getDepartureTime())) return false;
-        if (stop.getArrivalTime() < departureTime ||
-            stop.getDepartureTime() > arrivalTime) return false;
+        if (stop.getOrder() <= 0 || stop.getStationId().empty())
+            return false;
+        if (!stop.isValidTime())
+            return false;
+        if (!TimeUtils::isValidTime(stop.getArrivalTime()) || !TimeUtils::isValidTime(stop.getDepartureTime()))
+            return false;
+        if (stop.getArrivalTime() < departureTime || stop.getDepartureTime() > arrivalTime)
+            return false;
 
         for (int i = 0; i < stops.getSize(); ++i)
         {
             const Stop* s = stops.get(i);
-            if (s && (s->getOrder() == stop.getOrder() ||
-                      s->getStationId() == stop.getStationId()))
+            if (s && (s->getOrder() == stop.getOrder() || s->getStationId() == stop.getStationId()))
             {
-                return false;  
+                return false;
             }
         }
         int position = 0;
         while (position < stops.getSize())
         {
             const Stop* current = stops.get(position);
-            if (current && stop.getOrder() < current->getOrder()) break;
+            if (current && stop.getOrder() < current->getOrder())
+                break;
             ++position;
         }
         stops.insertAt(position, stop);
         return true;
     }
 
-     
     bool removeStopByOrder(int order)
     {
         for (int i = 0; i < stops.getSize(); ++i)
@@ -218,40 +199,27 @@ public:
         return false;
     }
 
-     
-     
-     
-
     bool isValidTime() const
     {
-        return TimeUtils::isValidTime(departureTime)
-            && TimeUtils::isValidTime(arrivalTime)
-            && arrivalTime > departureTime;
+        return TimeUtils::dateToDayNumber(departureDate) >= 0 && TimeUtils::isValidTime(departureTime) &&
+               TimeUtils::isValidTime(arrivalTime) && arrivalTime > departureTime;
     }
 
-     
     int getDuration() const
     {
         return arrivalTime - departureTime;
     }
 
-     
     int getStopCount() const
     {
         return stops.getSize();
     }
 
-     
-     
-     
-
-     
     void shiftSchedule(int minutes)
     {
         departureTime += minutes;
-        arrivalTime   += minutes;
+        arrivalTime += minutes;
 
-         
         for (int i = 0; i < stops.getSize(); ++i)
         {
             Stop* s = stops.get(i);
@@ -263,11 +231,6 @@ public:
         }
     }
 
-     
-     
-     
-
-     
     void displaySchedule() const
     {
         cout << "----------------------------------------\n";
@@ -275,8 +238,8 @@ public:
         cout << "Ma tau    : " << trainId << "\n";
         cout << "Ga di     : " << departureStationId << "\n";
         cout << "Ga den    : " << destinationStationId << "\n";
-        cout << "Gio di    : " << TimeUtils::minutesToTime(departureTime) << "\n";
-        cout << "Gio den   : " << TimeUtils::minutesToTime(arrivalTime) << "\n";
+        cout << "Gio di    : " << TimeUtils::minutesToDisplay(departureTime) << "\n";
+        cout << "Gio den   : " << TimeUtils::minutesToDisplay(arrivalTime) << "\n";
         cout << "Thoi gian : " << getDuration() << " phut\n";
         cout << "Uu tien   : " << priority << "\n";
         cout << "Trang thai: " << status << "\n";
@@ -284,7 +247,6 @@ public:
         cout << "----------------------------------------\n";
     }
 
-     
     void displayScheduleWithStops() const
     {
         displaySchedule();

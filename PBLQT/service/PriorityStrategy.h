@@ -3,24 +3,14 @@
 
 #include "SchedulingStrategy.h"
 
- 
- 
 class PriorityStrategy : public SchedulingStrategy
 {
 public:
-    int score(const Schedule& schedule) const override
+    bool higher(const Schedule& first, const Schedule& second) const override
     {
-        return schedule.getPriority();
-    }
-
-    bool higher(
-        const Schedule& first,
-        const Schedule& second
-    ) const override
-    {
-        if (score(first) != score(second))
+        if (first.getPriority() != second.getPriority())
         {
-            return score(first) > score(second);
+            return first.getPriority() > second.getPriority();
         }
 
         return first.getDepartureTime() <= second.getDepartureTime();
@@ -28,4 +18,3 @@ public:
 };
 
 #endif
-

@@ -13,7 +13,6 @@
 
 using namespace std;
 
- 
 class Dispatcher
 {
 private:
@@ -21,12 +20,10 @@ private:
     MaxHeap priorityQueue;
     OperationStack history;
 
-     
     SchedulingStrategy* strategy;
 
 public:
-    Dispatcher()
-        : strategy(nullptr)
+    Dispatcher() : strategy(nullptr)
     {
     }
 
@@ -39,22 +36,14 @@ public:
     {
         waitingQueue.enqueue(trainId);
 
-        history.push(Operation(
-            "QUEUE",
-            trainId,
-            "Them vao hang cho"
-        ));
+        history.push(Operation("QUEUE", trainId, "Them vao hang cho"));
     }
 
     void addPriority(const string& trainId, int priority)
     {
         priorityQueue.push(PriorityItem(trainId, priority));
 
-        history.push(Operation(
-            "PRIORITY",
-            trainId,
-            "Them vao hang uu tien"
-        ));
+        history.push(Operation("PRIORITY", trainId, "Them vao hang uu tien"));
     }
 
     string nextTrain()
@@ -63,11 +52,7 @@ public:
 
         if (priorityQueue.pop(priorityItem))
         {
-            history.push(Operation(
-                "DISPATCH",
-                priorityItem.trainId,
-                "Dieu phoi theo uu tien"
-            ));
+            history.push(Operation("DISPATCH", priorityItem.trainId, "Dieu phoi theo uu tien"));
 
             return priorityItem.trainId;
         }
@@ -76,11 +61,7 @@ public:
 
         if (waitingQueue.dequeue(trainId))
         {
-            history.push(Operation(
-                "DISPATCH",
-                trainId,
-                "Lay tu hang cho"
-            ));
+            history.push(Operation("DISPATCH", trainId, "Lay tu hang cho"));
 
             return trainId;
         }
@@ -90,24 +71,22 @@ public:
 
     void showQueues() const
     {
-        cout << "\nQueue size=" << waitingQueue.getSize()
-             << ", Priority size=" << priorityQueue.getSize()
-             << "\n";
+        if (waitingQueue.isEmpty() && priorityQueue.isEmpty())
+        {
+            return;
+        }
+
+        cout << "\nQueue size=" << waitingQueue.getSize() << ", Priority size=" << priorityQueue.getSize() << "\n";
     }
 
     void showHistory() const
     {
         cout << "\n===== LICH SU =====\n";
 
-        history.forEachTopToBottom([](const Operation& operation) {
-            operation.display();
-        });
+        history.displayTopToBottom();
     }
 
-    bool compare(
-        const Schedule& first,
-        const Schedule& second
-    ) const
+    bool compare(const Schedule& first, const Schedule& second) const
     {
         if (strategy)
         {
@@ -124,23 +103,12 @@ public:
             return false;
         }
 
-         
-        if (schedule.getArrivalTime() + minutes > 1439)
-        {
-            return false;
-        }
-
         schedule.shiftSchedule(minutes);
 
-        history.push(Operation(
-            "DELAY",
-            schedule.getScheduleId(),
-            "Doi lich +" + to_string(minutes) + " phut"
-        ));
+        history.push(Operation("DELAY", schedule.getScheduleId(), "Doi lich +" + to_string(minutes) + " phut"));
 
         return true;
     }
 };
 
 #endif
-

@@ -8,37 +8,52 @@ class Station;
 class Route;
 class Schedule;
 
-struct PointerHashNode {
+struct PointerHashNode
+{
     string key;
     void* value;
     PointerHashNode* next;
-    PointerHashNode(const string& valueKey, void* valuePointer)
-        : key(valueKey), value(valuePointer), next(nullptr) {}
+    PointerHashNode(const string& valueKey, void* valuePointer) : key(valueKey), value(valuePointer), next(nullptr)
+    {
+    }
 };
 
-class PointerHashTable {
+class PointerHashTable
+{
 private:
     PointerHashNode** table;
     int capacity;
     int size;
-    int hashString(const string& key) const {
+    int hashString(const string& key) const
+    {
         unsigned long hashValue = 0;
-        for (char character : key) hashValue = hashValue * 131u + static_cast<unsigned char>(character);
+        for (char character : key)
+            hashValue = hashValue * 131u + static_cast<unsigned char>(character);
         return static_cast<int>(hashValue % capacity);
     }
+
 public:
-    PointerHashTable(int initialCapacity = 101) : capacity(initialCapacity), size(0) {
+    PointerHashTable(int initialCapacity = 101) : capacity(initialCapacity), size(0)
+    {
         table = new PointerHashNode*[capacity];
-        for (int i = 0; i < capacity; ++i) table[i] = nullptr;
+        for (int i = 0; i < capacity; ++i)
+            table[i] = nullptr;
     }
-    ~PointerHashTable() { clear(); delete[] table; }
+    ~PointerHashTable()
+    {
+        clear();
+        delete[] table;
+    }
     PointerHashTable(const PointerHashTable&) = delete;
     PointerHashTable& operator=(const PointerHashTable&) = delete;
-    bool insert(const string& key, void* value) {
+    bool insert(const string& key, void* value)
+    {
         int index = hashString(key);
         PointerHashNode* current = table[index];
-        while (current != nullptr) {
-            if (current->key == key) return false;
+        while (current != nullptr)
+        {
+            if (current->key == key)
+                return false;
             current = current->next;
         }
         PointerHashNode* node = new PointerHashNode(key, value);
@@ -47,24 +62,35 @@ public:
         ++size;
         return true;
     }
-    void* search(const string& key) const {
+    void* search(const string& key) const
+    {
         int index = hashString(key);
         PointerHashNode* current = table[index];
-        while (current != nullptr) {
-            if (current->key == key) return current->value;
+        while (current != nullptr)
+        {
+            if (current->key == key)
+                return current->value;
             current = current->next;
         }
         return nullptr;
     }
-    bool contains(const string& key) const { return search(key) != nullptr; }
-    bool remove(const string& key) {
+    bool contains(const string& key) const
+    {
+        return search(key) != nullptr;
+    }
+    bool remove(const string& key)
+    {
         int index = hashString(key);
         PointerHashNode* current = table[index];
         PointerHashNode* previous = nullptr;
-        while (current != nullptr) {
-            if (current->key == key) {
-                if (previous == nullptr) table[index] = current->next;
-                else previous->next = current->next;
+        while (current != nullptr)
+        {
+            if (current->key == key)
+            {
+                if (previous == nullptr)
+                    table[index] = current->next;
+                else
+                    previous->next = current->next;
                 delete current;
                 --size;
                 return true;
@@ -74,20 +100,29 @@ public:
         }
         return false;
     }
-    int getSize() const { return size; }
-    void forEach(const std::function<void(const string&, void*)>& visit) const {
-        for (int i = 0; i < capacity; ++i) {
+    int getSize() const
+    {
+        return size;
+    }
+    void forEach(const std::function<void(const string&, void*)>& visit) const
+    {
+        for (int i = 0; i < capacity; ++i)
+        {
             PointerHashNode* current = table[i];
-            while (current != nullptr) {
+            while (current != nullptr)
+            {
                 visit(current->key, current->value);
                 current = current->next;
             }
         }
     }
-    void clear() {
-        for (int i = 0; i < capacity; ++i) {
+    void clear()
+    {
+        for (int i = 0; i < capacity; ++i)
+        {
             PointerHashNode* current = table[i];
-            while (current != nullptr) {
+            while (current != nullptr)
+            {
                 PointerHashNode* temp = current;
                 current = current->next;
                 delete temp;
@@ -98,62 +133,146 @@ public:
     }
 };
 
-class TrainHashTable {
+class TrainHashTable
+{
 private:
     PointerHashTable data;
+
 public:
-    bool insert(const string& key, Train* value) { return data.insert(key, value); }
-    Train* search(const string& key) const { return static_cast<Train*>(data.search(key)); }
-    bool contains(const string& key) const { return data.contains(key); }
-    bool remove(const string& key) { return data.remove(key); }
-    int getSize() const { return data.getSize(); }
-    void clear() { data.clear(); }
-    void forEach(const std::function<void(const string&, Train*)>& visit) const {
+    bool insert(const string& key, Train* value)
+    {
+        return data.insert(key, value);
+    }
+    Train* search(const string& key) const
+    {
+        return static_cast<Train*>(data.search(key));
+    }
+    bool contains(const string& key) const
+    {
+        return data.contains(key);
+    }
+    bool remove(const string& key)
+    {
+        return data.remove(key);
+    }
+    int getSize() const
+    {
+        return data.getSize();
+    }
+    void clear()
+    {
+        data.clear();
+    }
+    void forEach(const std::function<void(const string&, Train*)>& visit) const
+    {
         data.forEach([&](const string& key, void* value) { visit(key, static_cast<Train*>(value)); });
     }
 };
 
-class StationHashTable {
+class StationHashTable
+{
 private:
     PointerHashTable data;
+
 public:
-    bool insert(const string& key, Station* value) { return data.insert(key, value); }
-    Station* search(const string& key) const { return static_cast<Station*>(data.search(key)); }
-    bool contains(const string& key) const { return data.contains(key); }
-    bool remove(const string& key) { return data.remove(key); }
-    int getSize() const { return data.getSize(); }
-    void clear() { data.clear(); }
-    void forEach(const std::function<void(const string&, Station*)>& visit) const {
+    bool insert(const string& key, Station* value)
+    {
+        return data.insert(key, value);
+    }
+    Station* search(const string& key) const
+    {
+        return static_cast<Station*>(data.search(key));
+    }
+    bool contains(const string& key) const
+    {
+        return data.contains(key);
+    }
+    bool remove(const string& key)
+    {
+        return data.remove(key);
+    }
+    int getSize() const
+    {
+        return data.getSize();
+    }
+    void clear()
+    {
+        data.clear();
+    }
+    void forEach(const std::function<void(const string&, Station*)>& visit) const
+    {
         data.forEach([&](const string& key, void* value) { visit(key, static_cast<Station*>(value)); });
     }
 };
 
-class RouteHashTable {
+class RouteHashTable
+{
 private:
     PointerHashTable data;
+
 public:
-    bool insert(const string& key, Route* value) { return data.insert(key, value); }
-    Route* search(const string& key) const { return static_cast<Route*>(data.search(key)); }
-    bool contains(const string& key) const { return data.contains(key); }
-    bool remove(const string& key) { return data.remove(key); }
-    int getSize() const { return data.getSize(); }
-    void clear() { data.clear(); }
-    void forEach(const std::function<void(const string&, Route*)>& visit) const {
+    bool insert(const string& key, Route* value)
+    {
+        return data.insert(key, value);
+    }
+    Route* search(const string& key) const
+    {
+        return static_cast<Route*>(data.search(key));
+    }
+    bool contains(const string& key) const
+    {
+        return data.contains(key);
+    }
+    bool remove(const string& key)
+    {
+        return data.remove(key);
+    }
+    int getSize() const
+    {
+        return data.getSize();
+    }
+    void clear()
+    {
+        data.clear();
+    }
+    void forEach(const std::function<void(const string&, Route*)>& visit) const
+    {
         data.forEach([&](const string& key, void* value) { visit(key, static_cast<Route*>(value)); });
     }
 };
 
-class ScheduleHashTable {
+class ScheduleHashTable
+{
 private:
     PointerHashTable data;
+
 public:
-    bool insert(const string& key, Schedule* value) { return data.insert(key, value); }
-    Schedule* search(const string& key) const { return static_cast<Schedule*>(data.search(key)); }
-    bool contains(const string& key) const { return data.contains(key); }
-    bool remove(const string& key) { return data.remove(key); }
-    int getSize() const { return data.getSize(); }
-    void clear() { data.clear(); }
-    void forEach(const std::function<void(const string&, Schedule*)>& visit) const {
+    bool insert(const string& key, Schedule* value)
+    {
+        return data.insert(key, value);
+    }
+    Schedule* search(const string& key) const
+    {
+        return static_cast<Schedule*>(data.search(key));
+    }
+    bool contains(const string& key) const
+    {
+        return data.contains(key);
+    }
+    bool remove(const string& key)
+    {
+        return data.remove(key);
+    }
+    int getSize() const
+    {
+        return data.getSize();
+    }
+    void clear()
+    {
+        data.clear();
+    }
+    void forEach(const std::function<void(const string&, Schedule*)>& visit) const
+    {
         data.forEach([&](const string& key, void* value) { visit(key, static_cast<Schedule*>(value)); });
     }
 };

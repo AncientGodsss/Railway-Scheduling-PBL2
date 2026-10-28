@@ -76,6 +76,11 @@
         <property name="currentRow">
          <number>0</number>
         </property>
+         <item>
+          <property name="text">
+           <string>Tổng quan</string>
+          </property>
+         </item>
         <item>
          <property name="text">
           <string>Quản lý tàu</string>
@@ -118,6 +123,68 @@
         <property name="currentIndex">
          <number>0</number>
         </property>
+        <widget class="QWidget" name="homeTab">
+         <layout class="QVBoxLayout" name="homeLayout">
+          <item>
+           <spacer name="homeTopSpacer">
+            <property name="orientation"><enum>Qt::Vertical</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>20</width><height>80</height></size></property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="homeTitle">
+            <property name="font"><font><pointsize>24</pointsize><bold>true</bold></font></property>
+            <property name="text"><string>HỆ THỐNG ĐIỀU PHỐI LỊCH CHẠY TÀU</string></property>
+            <property name="alignment"><set>Qt::AlignCenter</set></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="homeSubtitle">
+            <property name="text"><string>Đồ án cơ sở lập trình PBL2</string></property>
+            <property name="alignment"><set>Qt::AlignCenter</set></property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="homeMiddleSpacer">
+            <property name="orientation"><enum>Qt::Vertical</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>20</width><height>35</height></size></property>
+           </spacer>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QFrame" name="homeInfoFrame">
+            <property name="maximumSize"><size><width>720</width><height>220</height></size></property>
+            <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+            <layout class="QVBoxLayout" name="homeInfoLayout">
+             <item>
+              <widget class="QLabel" name="homeWelcome">
+               <property name="font"><font><pointsize>14</pointsize><bold>true</bold></font></property>
+               <property name="text"><string>Chào mừng bạn đến với chương trình</string></property>
+               <property name="alignment"><set>Qt::AlignCenter</set></property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="homeDescription">
+               <property name="text"><string>Quản lý tàu, nhà ga, tuyến đường và lịch chạy&#xa;Tìm đường trên mạng lưới đường sắt&#xa;Phát hiện xung đột và hỗ trợ điều phối lịch chạy</string></property>
+               <property name="alignment"><set>Qt::AlignCenter</set></property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="homeHint">
+               <property name="text"><string>Chọn một chức năng ở thanh bên trái để bắt đầu.</string></property>
+               <property name="alignment"><set>Qt::AlignCenter</set></property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="homeBottomSpacer">
+            <property name="orientation"><enum>Qt::Vertical</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>20</width><height>120</height></size></property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
         <widget class="QWidget" name="trainTab">
          <layout class="QVBoxLayout">
           <item>
@@ -250,6 +317,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="btnEditSchedule">
+              <property name="text">
+               <string>Sửa lịch</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="btnDeleteSchedule">
               <property name="text">
                <string>Xóa lịch</string>
@@ -282,7 +356,7 @@
           <item>
            <widget class="QLabel" name="stopLabel">
             <property name="text">
-             <string>Điểm dừng của lịch đang chọn</string>
+             <string>Hành trình của lịch đang chọn</string>
             </property>
            </widget>
           </item>
@@ -301,7 +375,7 @@
             <item>
              <widget class="QPushButton" name="btnViewStops">
               <property name="text">
-               <string>Xem điểm dừng</string>
+                  <string>Xem hành trình</string>
               </property>
              </widget>
             </item>
@@ -309,6 +383,13 @@
              <widget class="QPushButton" name="btnAddStop">
               <property name="text">
                <string>Thêm điểm dừng</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnEditStop">
+              <property name="text">
+               <string>Sửa điểm dừng</string>
               </property>
              </widget>
             </item>
@@ -356,16 +437,6 @@
             </item>
             <item row="2" column="1">
              <widget class="QComboBox" name="algoCombo">
-              <item>
-               <property name="text">
-                <string>BFS - Duyệt theo chiều rộng</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>DFS - Duyệt theo chiều sâu</string>
-               </property>
-              </item>
               <item>
                <property name="text">
                 <string>Dijkstra - Đường ngắn nhất</string>

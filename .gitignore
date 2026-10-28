@@ -28,4 +28,5 @@ fix_*.py
 restore.py
 scratch.cpp
 *.log
+backups/
 

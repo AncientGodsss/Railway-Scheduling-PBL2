@@ -19,7 +19,6 @@ private:
     string status;
 
 public:
-     
     Train()
     {
         capacity = 0;
@@ -27,15 +26,7 @@ public:
         status = "INACTIVE";
     }
 
-     
-    Train(
-        string i,
-        string n,
-        string t,
-        int c,
-        double s,
-        string st
-    )
+    Train(string i, string n, string t, int c, double s, string st)
     {
         id = i;
         name = n;
@@ -108,11 +99,7 @@ public:
 
     void displayInfo() const
     {
-        cout << id << " | "
-             << name << " | "
-             << type << " | "
-             << capacity << " cho | "
-             << maxSpeed << " km/h | "
+        cout << id << " | " << name << " | " << type << " | " << capacity << " cho | " << maxSpeed << " km/h | "
              << status << "\n";
     }
 };

@@ -19,7 +19,6 @@ private:
     string status;
 
 public:
-     
     Route()
     {
         distance = 0;
@@ -27,15 +26,7 @@ public:
         status = "ACTIVE";
     }
 
-     
-    Route(
-        string id,
-        string from,
-        string to,
-        double d,
-        int time,
-        string st
-    )
+    Route(string id, string from, string to, double d, int time, string st)
     {
         routeId = id;
         fromStationId = from;
@@ -47,7 +38,6 @@ public:
         status = st;
     }
 
-     
     string getRouteId() const
     {
         return routeId;
@@ -78,7 +68,6 @@ public:
         return status;
     }
 
-     
     void setFromStationId(const string& id)
     {
         fromStationId = id;
@@ -110,15 +99,10 @@ public:
         status = st;
     }
 
-     
     void displayInfo() const
     {
-        cout << routeId << " | "
-             << fromStationId << " -> "
-             << toStationId << " | "
-             << distance << " km | "
-             << travelTime << " phút | "
-             << status << "\n";
+        cout << routeId << " | " << fromStationId << " -> " << toStationId << " | " << distance << " km | "
+             << travelTime << " phút | " << status << "\n";
     }
 };
 

@@ -23,11 +23,7 @@ class ScheduleBST
 private:
     ScheduleBSTNode* root;
 
-    ScheduleBSTNode* insertNode(
-        ScheduleBSTNode* node,
-        int key,
-        Schedule* schedule
-    )
+    ScheduleBSTNode* insertNode(ScheduleBSTNode* node, int key, Schedule* schedule)
     {
         if (node == nullptr)
         {
@@ -46,12 +42,7 @@ private:
         return node;
     }
 
-    void putAscending(
-        ScheduleBSTNode* node,
-        Schedule** result,
-        int capacity,
-        int& count
-    ) const
+    void putAscending(ScheduleBSTNode* node, Schedule** result, int capacity, int& count) const
     {
         if (node == nullptr || count >= capacity)
         {
@@ -69,12 +60,7 @@ private:
         putAscending(node->right, result, capacity, count);
     }
 
-    void putDescending(
-        ScheduleBSTNode* node,
-        Schedule** result,
-        int capacity,
-        int& count
-    ) const
+    void putDescending(ScheduleBSTNode* node, Schedule** result, int capacity, int& count) const
     {
         if (node == nullptr || count >= capacity)
         {

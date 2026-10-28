@@ -14,32 +14,22 @@ private:
     string description;
 
 public:
-     
     Operation()
     {
     }
 
-     
-    Operation(
-        string a,
-        string t,
-        string d
-    )
+    Operation(string a, string t, string d)
     {
         action = a;
         target = t;
         description = d;
     }
 
-     
     void display() const
     {
-        cout << action << " | "
-             << target << " | "
-             << description << "\n";
+        cout << action << " | " << target << " | " << description << "\n";
     }
 
-     
     string getAction() const
     {
         return action;

@@ -4,23 +4,52 @@
 #include "../system/RailwaySystem.h"
 #include "../data_structure/BST.h"
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+class MainWindow;
+}
 QT_END_NAMESPACE
 class QTableWidget;
 class Schedule;
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 public:
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 private slots:
-    void onAddTrain(); void onEditTrain(); void onDeleteTrain(); void refreshTrainTable();
-    void onAddStation(); void onEditStation(); void onDeleteStation(); void refreshStationTable();
-    void onAddRoute(); void onEditRoute(); void onDeleteRoute(); void refreshRouteTable();
-    void onAddSchedule(); void onDeleteSchedule(); void onViewStops(); void onAddStop(); void onDeleteStop();
-    void onSortByTime(); void onSortByPriority(); void refreshScheduleTable();
-    void onFindPath(); void onCheckConflict(); void onDispatch(); void onChangeStrategy();
-    void onShowQueue(); void onAddToQueue(); void onShowHistory(); void onLoad(); void onSave();
+    void onAddTrain();
+    void onEditTrain();
+    void onDeleteTrain();
+    void refreshTrainTable();
+    void onAddStation();
+    void onEditStation();
+    void onDeleteStation();
+    void refreshStationTable();
+    void onAddRoute();
+    void onEditRoute();
+    void onDeleteRoute();
+    void refreshRouteTable();
+    void onAddSchedule();
+    void onEditSchedule();
+    void onDeleteSchedule();
+    void onViewStops();
+    void onAddStop();
+    void onEditStop();
+    void onDeleteStop();
+    void onSortByTime();
+    void onSortByPriority();
+    void refreshScheduleTable();
+    void onFindPath();
+    void onCheckConflict();
+    void onDispatch();
+    void onChangeStrategy();
+    void onShowQueue();
+    void onAddToQueue();
+    void onShowHistory();
+    void onLoad();
+    void onSave();
+
 private:
     Ui::MainWindow* ui;
     RailwaySystem system;
@@ -29,5 +58,7 @@ private:
     void refreshScheduleSelectors();
     QString selectedId(QTableWidget* table, int col = 0) const;
     void fillScheduleRow(QTableWidget* table, Schedule* schedule);
+    void addJourneyRow(const QString& orderText, const QString& stationId, const QString& arrival,
+                       const QString& departure, int storedOrder);
 };
 #endif

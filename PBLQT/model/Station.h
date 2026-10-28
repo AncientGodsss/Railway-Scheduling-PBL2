@@ -16,29 +16,18 @@ private:
     int numberOfTracks;
 
 public:
-     
     Station()
     {
         numberOfTracks = 0;
     }
 
-     
-    Station(
-        string id,
-        string name,
-        string loc,
-        int tracks
-    )
+    Station(string id, string name, string loc, int tracks)
     {
         stationId = id;
         stationName = name;
         location = loc;
         numberOfTracks = tracks;
     }
-
-     
-     
-     
 
     string getStationId() const
     {
@@ -60,10 +49,6 @@ public:
         return numberOfTracks;
     }
 
-     
-     
-     
-
     void setStationName(const string& name)
     {
         stationName = name;
@@ -82,17 +67,9 @@ public:
         }
     }
 
-     
-     
-     
-
     void displayInfo() const
     {
-        cout << stationId << " | "
-             << stationName << " | "
-             << location << " | "
-             << numberOfTracks
-             << " platforms\n";
+        cout << stationId << " | " << stationName << " | " << location << " | " << numberOfTracks << " platforms\n";
     }
 };
 

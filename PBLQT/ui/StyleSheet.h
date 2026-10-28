@@ -47,6 +47,36 @@ QLabel#titleLabel {
     font-weight: 700;
     padding: 16px 8px 8px 8px;
 }
+QLabel#homeTitle {
+    color: #173B78;
+    font-size: 28px;
+    font-weight: 700;
+}
+QLabel#homeSubtitle {
+    color: #64748B;
+    font-size: 16px;
+    padding-top: 6px;
+}
+QFrame#homeInfoFrame {
+    background: #F8FAFD;
+    border: 1px solid #D7E1EE;
+    border-radius: 14px;
+    padding: 22px;
+}
+QLabel#homeWelcome {
+    color: #1957C2;
+    font-size: 18px;
+    font-weight: 700;
+}
+QLabel#homeDescription {
+    color: #334155;
+    font-size: 14px;
+}
+QLabel#homeHint {
+    color: #64748B;
+    font-style: italic;
+    padding-top: 8px;
+}
 QLabel#statTrain, QLabel#statStation, QLabel#statRoute, QLabel#statSchedule {
     background: #FFFFFF;
     border: 1px solid #DDE5F0;
