@@ -193,26 +193,6 @@ public:
         }
         return *this;
     }
-    StringList(StringList&& other) noexcept : head(other.head), tail(other.tail), size(other.size)
-    {
-        other.head = nullptr;
-        other.tail = nullptr;
-        other.size = 0;
-    }
-    StringList& operator=(StringList&& other) noexcept
-    {
-        if (this != &other)
-        {
-            clear();
-            head = other.head;
-            tail = other.tail;
-            size = other.size;
-            other.head = nullptr;
-            other.tail = nullptr;
-            other.size = 0;
-        }
-        return *this;
-    }
     bool isEmpty() const
     {
         return size == 0;

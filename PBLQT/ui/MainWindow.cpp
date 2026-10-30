@@ -93,31 +93,39 @@ void MainWindow::refreshStationSelectors()
 {
     ui->cbStart->clear();
     ui->cbDest->clear();
-    system.forEachStation(
-        [this](Station* station)
-        {
-            if (!station)
-                return;
-            QString id = QString::fromStdString(station->getStationId());
-            QString text = id + " - " + QString::fromStdString(station->getStationName());
-            ui->cbStart->addItem(text, id);
-            ui->cbDest->addItem(text, id);
-        });
+
+    for (int i = 0; i < system.getStationCount(); ++i)
+    {
+        Station* station = system.getStationAt(i);
+        if (!station)
+            continue;
+
+        QString id = QString::fromStdString(station->getStationId());
+        QString text = id + " - " + QString::fromStdString(station->getStationName());
+        ui->cbStart->addItem(text, id);
+        ui->cbDest->addItem(text, id);
+    }
 }
 void MainWindow::refreshScheduleSelectors()
 {
     QComboBox* boxes[] = {ui->cbConflictA, ui->cbConflictB, ui->cbDispA, ui->cbDispB};
-    for (QComboBox* box : boxes)
-        box->clear();
-    system.forEachSchedule(
-        [&boxes](Schedule* schedule)
+    int boxCount = 4;
+
+    for (int i = 0; i < boxCount; ++i)
+        boxes[i]->clear();
+
+    for (int i = 0; i < system.getScheduleCount(); ++i)
+    {
+        Schedule* schedule = system.getScheduleAt(i);
+        if (!schedule)
+            continue;
+
+        QString id = QString::fromStdString(schedule->getScheduleId());
+        for (int j = 0; j < boxCount; ++j)
         {
-            if (!schedule)
-                return;
-            QString id = QString::fromStdString(schedule->getScheduleId());
-            for (QComboBox* box : boxes)
-                box->addItem(id, id);
-        });
+            boxes[j]->addItem(id, id);
+        }
+    }
 }
 
 static QString translateStatus(const string& st)
@@ -204,67 +212,74 @@ void MainWindow::fillScheduleRow(QTableWidget* t, Schedule* s)
 void MainWindow::refreshTrainTable()
 {
     ui->trainTable->setRowCount(0);
-    system.forEachTrain(
-        [this](Train* t)
-        {
-            if (!t)
-                return;
-            int row = ui->trainTable->rowCount();
-            ui->trainTable->insertRow(row);
-            ui->trainTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(t->getTrainId())));
-            ui->trainTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(t->getTrainName())));
-            ui->trainTable->setItem(row, 2, new QTableWidgetItem(translateTrainType(t->getTrainType())));
-            ui->trainTable->setItem(row, 3, new QTableWidgetItem(QString::number(t->getCapacity())));
-            ui->trainTable->setItem(row, 4, new QTableWidgetItem(QString::number(t->getMaxSpeed())));
+    for (int i = 0; i < system.getTrainCount(); ++i)
+    {
+        Train* t = system.getTrainAt(i);
+        if (!t)
+            continue;
 
-            QTableWidgetItem* status = new QTableWidgetItem(translateStatus(t->getStatus()));
-            ui->trainTable->setItem(row, 5, status);
-        });
+        int row = ui->trainTable->rowCount();
+        ui->trainTable->insertRow(row);
+        ui->trainTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(t->getTrainId())));
+        ui->trainTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(t->getTrainName())));
+        ui->trainTable->setItem(row, 2, new QTableWidgetItem(translateTrainType(t->getTrainType())));
+        ui->trainTable->setItem(row, 3, new QTableWidgetItem(QString::number(t->getCapacity())));
+        ui->trainTable->setItem(row, 4, new QTableWidgetItem(QString::number(t->getMaxSpeed())));
+
+        QTableWidgetItem* status = new QTableWidgetItem(translateStatus(t->getStatus()));
+        ui->trainTable->setItem(row, 5, status);
+    }
     updateStats();
 }
 
 void MainWindow::refreshStationTable()
 {
     ui->stationTable->setRowCount(0);
-    system.forEachStation(
-        [this](Station* s)
-        {
-            if (!s)
-                return;
-            int row = ui->stationTable->rowCount();
-            ui->stationTable->insertRow(row);
-            ui->stationTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(s->getStationId())));
-            ui->stationTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(s->getStationName())));
-            ui->stationTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(s->getLocation())));
-            ui->stationTable->setItem(row, 3, new QTableWidgetItem(QString::number(s->getNumberOfTracks())));
-        });
+    for (int i = 0; i < system.getStationCount(); ++i)
+    {
+        Station* s = system.getStationAt(i);
+        if (!s)
+            continue;
+
+        int row = ui->stationTable->rowCount();
+        ui->stationTable->insertRow(row);
+        ui->stationTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(s->getStationId())));
+        ui->stationTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(s->getStationName())));
+        ui->stationTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(s->getLocation())));
+        ui->stationTable->setItem(row, 3, new QTableWidgetItem(QString::number(s->getNumberOfTracks())));
+    }
     updateStats();
 }
 
 void MainWindow::refreshRouteTable()
 {
     ui->routeTable->setRowCount(0);
-    system.forEachRoute(
-        [this](Route* r)
-        {
-            if (!r)
-                return;
-            int row = ui->routeTable->rowCount();
-            ui->routeTable->insertRow(row);
-            ui->routeTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(r->getRouteId())));
-            ui->routeTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(r->getFromStationId())));
-            ui->routeTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(r->getToStationId())));
-            ui->routeTable->setItem(row, 3, new QTableWidgetItem(QString::number(r->getDistance())));
-            ui->routeTable->setItem(row, 4, new QTableWidgetItem(QString::number(r->getTravelTime())));
-            ui->routeTable->setItem(row, 5, new QTableWidgetItem(translateStatus(r->getStatus())));
-        });
+    for (int i = 0; i < system.getRouteCount(); ++i)
+    {
+        Route* r = system.getRouteAt(i);
+        if (!r)
+            continue;
+
+        int row = ui->routeTable->rowCount();
+        ui->routeTable->insertRow(row);
+        ui->routeTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(r->getRouteId())));
+        ui->routeTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(r->getFromStationId())));
+        ui->routeTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(r->getToStationId())));
+        ui->routeTable->setItem(row, 3, new QTableWidgetItem(QString::number(r->getDistance())));
+        ui->routeTable->setItem(row, 4, new QTableWidgetItem(QString::number(r->getTravelTime())));
+        ui->routeTable->setItem(row, 5, new QTableWidgetItem(translateStatus(r->getStatus())));
+    }
     updateStats();
 }
 
 void MainWindow::refreshScheduleTable()
 {
     ui->scheduleTable->setRowCount(0);
-    system.forEachSchedule([this](Schedule* s) { fillScheduleRow(ui->scheduleTable, s); });
+    for (int i = 0; i < system.getScheduleCount(); ++i)
+    {
+        Schedule* s = system.getScheduleAt(i);
+        fillScheduleRow(ui->scheduleTable, s);
+    }
     updateStats();
 }
 
@@ -681,12 +696,12 @@ void MainWindow::onSortByTime()
 {
     ui->scheduleTable->setRowCount(0);
     ScheduleBST bst;
-    system.forEachSchedule(
-        [&bst](Schedule* s)
-        {
-            if (s)
-                bst.insert(s->getDepartureTime(), s);
-        });
+    for (int i = 0; i < system.getScheduleCount(); ++i)
+    {
+        Schedule* s = system.getScheduleAt(i);
+        if (s)
+            bst.insert(s->getDepartureTime(), s);
+    }
     int capacity = system.getScheduleCount();
     Schedule** result = new Schedule*[capacity];
     int count = bst.getAscending(result, capacity);
@@ -700,12 +715,12 @@ void MainWindow::onSortByPriority()
 {
     ui->scheduleTable->setRowCount(0);
     ScheduleBST bst;
-    system.forEachSchedule(
-        [&bst](Schedule* s)
-        {
-            if (s)
-                bst.insert(s->getPriority(), s);
-        });
+    for (int i = 0; i < system.getScheduleCount(); ++i)
+    {
+        Schedule* s = system.getScheduleAt(i);
+        if (s)
+            bst.insert(s->getPriority(), s);
+    }
     int capacity = system.getScheduleCount();
     Schedule** result = new Schedule*[capacity];
     int count = bst.getDescending(result, capacity);

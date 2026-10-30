@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include <functional>
 #include "../model/Train.h"
 #include "../model/Station.h"
 #include "../model/Route.h"
@@ -30,6 +29,9 @@ private:
     ConflictDetector detector;
     SchedulingStrategy* strategy;
 
+    RailwaySystem(const RailwaySystem& other);
+    RailwaySystem& operator=(const RailwaySystem& other);
+
     bool trainUsed(const string& id) const;
     bool stationUsed(const string& id) const;
     void clearData();
@@ -37,9 +39,6 @@ private:
 public:
     RailwaySystem();
     ~RailwaySystem();
-    RailwaySystem(const RailwaySystem&) = delete;
-    RailwaySystem& operator=(const RailwaySystem&) = delete;
-
     bool addTrain(Train* x);
     bool removeTrain(const string& id);
     Train* findTrain(const string& id);
@@ -87,26 +86,14 @@ public:
     int getRouteCount() const;
     int getScheduleCount() const;
 
+    Train* getTrainAt(int position) const;
+    Station* getStationAt(int position) const;
+    Route* getRouteAt(int position) const;
+    Schedule* getScheduleAt(int position) const;
+
     Dispatcher& getDispatcher()
     {
         return dispatcher;
-    }
-
-    void forEachTrain(const std::function<void(Train*)>& visit) const
-    {
-        trains.forEach([&](const string&, Train* value) { visit(value); });
-    }
-    void forEachStation(const std::function<void(Station*)>& visit) const
-    {
-        stations.forEach([&](const string&, Station* value) { visit(value); });
-    }
-    void forEachRoute(const std::function<void(Route*)>& visit) const
-    {
-        routes.forEach([&](const string&, Route* value) { visit(value); });
-    }
-    void forEachSchedule(const std::function<void(Schedule*)>& visit) const
-    {
-        schedules.forEach([&](const string&, Schedule* value) { visit(value); });
     }
 
     bool loadAllData(const string& folder = "data/");

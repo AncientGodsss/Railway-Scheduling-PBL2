@@ -1,7 +1,6 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 #include <string>
-#include <functional>
 using std::string;
 class Train;
 class Station;
@@ -24,11 +23,17 @@ private:
     PointerHashNode** table;
     int capacity;
     int size;
+    PointerHashTable(const PointerHashTable& other);
+    PointerHashTable& operator=(const PointerHashTable& other);
+
     int hashString(const string& key) const
     {
         unsigned long hashValue = 0;
-        for (char character : key)
+        for (int i = 0; i < static_cast<int>(key.length()); ++i)
+        {
+            char character = key[i];
             hashValue = hashValue * 131u + static_cast<unsigned char>(character);
+        }
         return static_cast<int>(hashValue % capacity);
     }
 
@@ -44,8 +49,6 @@ public:
         clear();
         delete[] table;
     }
-    PointerHashTable(const PointerHashTable&) = delete;
-    PointerHashTable& operator=(const PointerHashTable&) = delete;
     bool insert(const string& key, void* value)
     {
         int index = hashString(key);
@@ -104,17 +107,26 @@ public:
     {
         return size;
     }
-    void forEach(const std::function<void(const string&, void*)>& visit) const
+    void* getAt(int position) const
     {
+        if (position < 0 || position >= size)
+            return nullptr;
+
+        int currentPosition = 0;
         for (int i = 0; i < capacity; ++i)
         {
             PointerHashNode* current = table[i];
             while (current != nullptr)
             {
-                visit(current->key, current->value);
+                if (currentPosition == position)
+                    return current->value;
+
+                ++currentPosition;
                 current = current->next;
             }
         }
+
+        return nullptr;
     }
     void clear()
     {
@@ -163,9 +175,9 @@ public:
     {
         data.clear();
     }
-    void forEach(const std::function<void(const string&, Train*)>& visit) const
+    Train* getAt(int position) const
     {
-        data.forEach([&](const string& key, void* value) { visit(key, static_cast<Train*>(value)); });
+        return static_cast<Train*>(data.getAt(position));
     }
 };
 
@@ -199,9 +211,9 @@ public:
     {
         data.clear();
     }
-    void forEach(const std::function<void(const string&, Station*)>& visit) const
+    Station* getAt(int position) const
     {
-        data.forEach([&](const string& key, void* value) { visit(key, static_cast<Station*>(value)); });
+        return static_cast<Station*>(data.getAt(position));
     }
 };
 
@@ -235,9 +247,9 @@ public:
     {
         data.clear();
     }
-    void forEach(const std::function<void(const string&, Route*)>& visit) const
+    Route* getAt(int position) const
     {
-        data.forEach([&](const string& key, void* value) { visit(key, static_cast<Route*>(value)); });
+        return static_cast<Route*>(data.getAt(position));
     }
 };
 
@@ -271,9 +283,9 @@ public:
     {
         data.clear();
     }
-    void forEach(const std::function<void(const string&, Schedule*)>& visit) const
+    Schedule* getAt(int position) const
     {
-        data.forEach([&](const string& key, void* value) { visit(key, static_cast<Schedule*>(value)); });
+        return static_cast<Schedule*>(data.getAt(position));
     }
 };
 #endif

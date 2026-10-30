@@ -16,6 +16,8 @@ private:
     QueueNode* frontNode;
     QueueNode* rearNode;
     int size;
+    StringQueue(const StringQueue& other);
+    StringQueue& operator=(const StringQueue& other);
 
 public:
     StringQueue() : frontNode(nullptr), rearNode(nullptr), size(0)
@@ -25,8 +27,6 @@ public:
     {
         clear();
     }
-    StringQueue(const StringQueue&) = delete;
-    StringQueue& operator=(const StringQueue&) = delete;
     bool isEmpty() const
     {
         return frontNode == nullptr;

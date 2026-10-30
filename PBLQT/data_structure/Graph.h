@@ -112,6 +112,8 @@ private:
     Vertex* vertices;
     int vertexCount;
     int vertexCapacity;
+    Graph(const Graph& other);
+    Graph& operator=(const Graph& other);
 
     void ensureCapacity()
     {
@@ -154,9 +156,6 @@ public:
     {
         delete[] vertices;
     }
-    Graph(const Graph&) = delete;
-    Graph& operator=(const Graph&) = delete;
-
     void clear()
     {
         delete[] vertices;

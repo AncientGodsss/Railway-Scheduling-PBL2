@@ -18,10 +18,15 @@ RailwaySystem::~RailwaySystem()
 
 void RailwaySystem::clearData()
 {
-    trains.forEach([](string, Train* x) { delete x; });
-    stations.forEach([](string, Station* x) { delete x; });
-    routes.forEach([](string, Route* x) { delete x; });
-    schedules.forEach([](string, Schedule* x) { delete x; });
+    for (int i = 0; i < trains.getSize(); ++i)
+        delete trains.getAt(i);
+    for (int i = 0; i < stations.getSize(); ++i)
+        delete stations.getAt(i);
+    for (int i = 0; i < routes.getSize(); ++i)
+        delete routes.getAt(i);
+    for (int i = 0; i < schedules.getSize(); ++i)
+        delete schedules.getAt(i);
+
     trains.clear();
     stations.clear();
     routes.clear();
@@ -39,14 +44,13 @@ bool RailwaySystem::addTrain(Train* x)
 
 bool RailwaySystem::trainUsed(const string& id) const
 {
-    bool used = false;
-    schedules.forEach(
-        [&](string, Schedule* s)
-        {
-            if (s && s->getTrainId() == id)
-                used = true;
-        });
-    return used;
+    for (int i = 0; i < schedules.getSize(); ++i)
+    {
+        Schedule* s = schedules.getAt(i);
+        if (s && s->getTrainId() == id)
+            return true;
+    }
+    return false;
 }
 
 Train* RailwaySystem::findTrain(const string& id)
@@ -85,12 +89,12 @@ bool RailwaySystem::updateTrain(const string& id, const string& name, const stri
 void RailwaySystem::displayTrains() const
 {
     cout << "\n===== DANH SACH TAU =====\n";
-    trains.forEach(
-        [](string, Train* x)
-        {
-            if (x)
-                x->displayInfo();
-        });
+    for (int i = 0; i < trains.getSize(); ++i)
+    {
+        Train* x = trains.getAt(i);
+        if (x)
+            x->displayInfo();
+    }
 }
 
 bool RailwaySystem::addStation(Station* x)
@@ -110,20 +114,21 @@ bool RailwaySystem::addStation(Station* x)
 
 bool RailwaySystem::stationUsed(const string& id) const
 {
-    bool used = false;
-    routes.forEach(
-        [&](string, Route* r)
-        {
-            if (r && (r->getFromStationId() == id || r->getToStationId() == id))
-                used = true;
-        });
-    schedules.forEach(
-        [&](string, Schedule* s)
-        {
-            if (s && (s->getDepartureStationId() == id || s->getDestinationStationId() == id))
-                used = true;
-        });
-    return used;
+    for (int i = 0; i < routes.getSize(); ++i)
+    {
+        Route* r = routes.getAt(i);
+        if (r && (r->getFromStationId() == id || r->getToStationId() == id))
+            return true;
+    }
+
+    for (int i = 0; i < schedules.getSize(); ++i)
+    {
+        Schedule* s = schedules.getAt(i);
+        if (s && (s->getDepartureStationId() == id || s->getDestinationStationId() == id))
+            return true;
+    }
+
+    return false;
 }
 
 Station* RailwaySystem::findStation(const string& id)
@@ -160,12 +165,12 @@ bool RailwaySystem::updateStation(const string& id, const string& name, const st
 void RailwaySystem::displayStations() const
 {
     cout << "\n===== DANH SACH GA =====\n";
-    stations.forEach(
-        [](string, Station* x)
-        {
-            if (x)
-                x->displayInfo();
-        });
+    for (int i = 0; i < stations.getSize(); ++i)
+    {
+        Station* x = stations.getAt(i);
+        if (x)
+            x->displayInfo();
+    }
 }
 
 bool RailwaySystem::addRoute(Route* x)
@@ -216,12 +221,12 @@ bool RailwaySystem::updateRoute(const string& id, double dist, int time, const s
 void RailwaySystem::displayRoutes() const
 {
     cout << "\n===== DANH SACH TUYEN =====\n";
-    routes.forEach(
-        [](string, Route* x)
-        {
-            if (x)
-                x->displayInfo();
-        });
+    for (int i = 0; i < routes.getSize(); ++i)
+    {
+        Route* x = routes.getAt(i);
+        if (x)
+            x->displayInfo();
+    }
 }
 
 bool RailwaySystem::addSchedule(Schedule* x)
@@ -435,12 +440,12 @@ bool RailwaySystem::updateStopInSchedule(const string& scheduleId, int oldOrder,
 void RailwaySystem::displaySchedules() const
 {
     cout << "\n===== DANH SACH LICH CHAY =====\n";
-    schedules.forEach(
-        [](string, Schedule* x)
-        {
-            if (x)
-                x->displaySchedule();
-        });
+    for (int i = 0; i < schedules.getSize(); ++i)
+    {
+        Schedule* x = schedules.getAt(i);
+        if (x)
+            x->displaySchedule();
+    }
 }
 
 void RailwaySystem::displaySchedulesSortedByTime() const
@@ -449,12 +454,12 @@ void RailwaySystem::displaySchedulesSortedByTime() const
 
     ScheduleBST bst;
 
-    schedules.forEach(
-        [&](string, Schedule* x)
-        {
-            if (x)
-                bst.insert(x->getDepartureTime(), x);
-        });
+    for (int i = 0; i < schedules.getSize(); ++i)
+    {
+        Schedule* x = schedules.getAt(i);
+        if (x)
+            bst.insert(x->getDepartureTime(), x);
+    }
 
     if (bst.isEmpty())
     {
@@ -483,12 +488,12 @@ void RailwaySystem::displaySchedulesSortedByPriority() const
 
     ScheduleBST bst;
 
-    schedules.forEach(
-        [&](string, Schedule* x)
-        {
-            if (x)
-                bst.insert(x->getPriority(), x);
-        });
+    for (int i = 0; i < schedules.getSize(); ++i)
+    {
+        Schedule* x = schedules.getAt(i);
+        if (x)
+            bst.insert(x->getPriority(), x);
+    }
 
     if (bst.isEmpty())
     {
@@ -629,30 +634,42 @@ void RailwaySystem::setSchedulingStrategy(int type)
 
 int RailwaySystem::getTrainCount() const
 {
-    int n = 0;
-    trains.forEach([&](string, Train*) { ++n; });
-    return n;
+    return trains.getSize();
 }
 
 int RailwaySystem::getStationCount() const
 {
-    int n = 0;
-    stations.forEach([&](string, Station*) { ++n; });
-    return n;
+    return stations.getSize();
 }
 
 int RailwaySystem::getRouteCount() const
 {
-    int n = 0;
-    routes.forEach([&](string, Route*) { ++n; });
-    return n;
+    return routes.getSize();
 }
 
 int RailwaySystem::getScheduleCount() const
 {
-    int n = 0;
-    schedules.forEach([&](string, Schedule*) { ++n; });
-    return n;
+    return schedules.getSize();
+}
+
+Train* RailwaySystem::getTrainAt(int position) const
+{
+    return trains.getAt(position);
+}
+
+Station* RailwaySystem::getStationAt(int position) const
+{
+    return stations.getAt(position);
+}
+
+Route* RailwaySystem::getRouteAt(int position) const
+{
+    return routes.getAt(position);
+}
+
+Schedule* RailwaySystem::getScheduleAt(int position) const
+{
+    return schedules.getAt(position);
 }
 
 bool RailwaySystem::loadAllData(const string& folder)

@@ -15,6 +15,8 @@ class OperationStack
 private:
     OperationNode* topNode;
     int size;
+    OperationStack(const OperationStack& other);
+    OperationStack& operator=(const OperationStack& other);
 
 public:
     OperationStack() : topNode(nullptr), size(0)
@@ -24,8 +26,6 @@ public:
     {
         clear();
     }
-    OperationStack(const OperationStack&) = delete;
-    OperationStack& operator=(const OperationStack&) = delete;
     bool isEmpty() const
     {
         return topNode == nullptr;

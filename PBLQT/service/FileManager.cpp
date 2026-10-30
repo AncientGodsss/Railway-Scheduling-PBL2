@@ -7,21 +7,19 @@
 
 using namespace std;
 
-namespace
-{
-bool openOutputFile(ofstream& file, const string& path)
+static bool openOutputFile(ofstream& file, const string& path)
 {
     file.open(path);
     return file.is_open();
 }
 
-bool inputFileExists(const string& path)
+static bool inputFileExists(const string& path)
 {
     ifstream file(path);
     return file.is_open();
 }
 
-bool readDataLine(istream& input, string& line)
+static bool readDataLine(istream& input, string& line)
 {
     if (!getline(input, line))
     {
@@ -43,7 +41,7 @@ bool readDataLine(istream& input, string& line)
     return true;
 }
 
-bool loadTrains(RailwaySystem& system, const string& path)
+static bool loadTrains(RailwaySystem& system, const string& path)
 {
     ifstream file(path);
 
@@ -89,7 +87,7 @@ bool loadTrains(RailwaySystem& system, const string& path)
     return true;
 }
 
-bool loadStations(RailwaySystem& system, const string& path)
+static bool loadStations(RailwaySystem& system, const string& path)
 {
     ifstream file(path);
 
@@ -133,7 +131,7 @@ bool loadStations(RailwaySystem& system, const string& path)
     return true;
 }
 
-bool loadRoutes(RailwaySystem& system, const string& path)
+static bool loadRoutes(RailwaySystem& system, const string& path)
 {
     ifstream file(path);
 
@@ -180,7 +178,7 @@ bool loadRoutes(RailwaySystem& system, const string& path)
     return true;
 }
 
-bool loadSchedules(RailwaySystem& system, const string& path)
+static bool loadSchedules(RailwaySystem& system, const string& path)
 {
     ifstream file(path);
 
@@ -241,7 +239,7 @@ bool loadSchedules(RailwaySystem& system, const string& path)
     return true;
 }
 
-bool loadStops(RailwaySystem& system, const string& path)
+static bool loadStops(RailwaySystem& system, const string& path)
 {
     ifstream file(path);
 
@@ -296,8 +294,6 @@ bool loadStops(RailwaySystem& system, const string& path)
 
     return true;
 }
-} // namespace
-
 bool FileManager::saveAll(const RailwaySystem& system, const string& folder)
 {
     ofstream file;
@@ -307,15 +303,15 @@ bool FileManager::saveAll(const RailwaySystem& system, const string& folder)
         return false;
     }
 
-    system.trains.forEach(
-        [&](string, Train* train)
+    for (int i = 0; i < system.trains.getSize(); ++i)
+    {
+        Train* train = system.trains.getAt(i);
+        if (train)
         {
-            if (train)
-            {
-                file << train->getTrainId() << "|" << train->getTrainName() << "|" << train->getTrainType() << "|"
-                     << train->getCapacity() << "|" << train->getMaxSpeed() << "|" << train->getStatus() << "\n";
-            }
-        });
+            file << train->getTrainId() << "|" << train->getTrainName() << "|" << train->getTrainType() << "|"
+                 << train->getCapacity() << "|" << train->getMaxSpeed() << "|" << train->getStatus() << "\n";
+        }
+    }
     file.close();
 
     if (!openOutputFile(file, folder + "stations.dat"))
@@ -323,15 +319,15 @@ bool FileManager::saveAll(const RailwaySystem& system, const string& folder)
         return false;
     }
 
-    system.stations.forEach(
-        [&](string, Station* station)
+    for (int i = 0; i < system.stations.getSize(); ++i)
+    {
+        Station* station = system.stations.getAt(i);
+        if (station)
         {
-            if (station)
-            {
-                file << station->getStationId() << "|" << station->getStationName() << "|" << station->getLocation()
-                     << "|" << station->getNumberOfTracks() << "\n";
-            }
-        });
+            file << station->getStationId() << "|" << station->getStationName() << "|" << station->getLocation()
+                 << "|" << station->getNumberOfTracks() << "\n";
+        }
+    }
     file.close();
 
     if (!openOutputFile(file, folder + "routes.dat"))
@@ -339,15 +335,15 @@ bool FileManager::saveAll(const RailwaySystem& system, const string& folder)
         return false;
     }
 
-    system.routes.forEach(
-        [&](string, Route* route)
+    for (int i = 0; i < system.routes.getSize(); ++i)
+    {
+        Route* route = system.routes.getAt(i);
+        if (route)
         {
-            if (route)
-            {
-                file << route->getRouteId() << "|" << route->getFromStationId() << "|" << route->getToStationId() << "|"
-                     << route->getDistance() << "|" << route->getTravelTime() << "|" << route->getStatus() << "\n";
-            }
-        });
+            file << route->getRouteId() << "|" << route->getFromStationId() << "|" << route->getToStationId() << "|"
+                 << route->getDistance() << "|" << route->getTravelTime() << "|" << route->getStatus() << "\n";
+        }
+    }
     file.close();
 
     if (!openOutputFile(file, folder + "schedules.dat"))
@@ -355,18 +351,18 @@ bool FileManager::saveAll(const RailwaySystem& system, const string& folder)
         return false;
     }
 
-    system.schedules.forEach(
-        [&](string, Schedule* schedule)
+    for (int i = 0; i < system.schedules.getSize(); ++i)
+    {
+        Schedule* schedule = system.schedules.getAt(i);
+        if (schedule)
         {
-            if (schedule)
-            {
-                file << schedule->getScheduleId() << "|" << schedule->getTrainId() << "|"
-                     << schedule->getDepartureStationId() << "|" << schedule->getDestinationStationId() << "|"
-                     << schedule->getDepartureTime() << "|" << schedule->getArrivalTime() << "|"
-                     << schedule->getPriority() << "|" << schedule->getStatus() << "|" << schedule->getDepartureDate()
-                     << "\n";
-            }
-        });
+            file << schedule->getScheduleId() << "|" << schedule->getTrainId() << "|"
+                 << schedule->getDepartureStationId() << "|" << schedule->getDestinationStationId() << "|"
+                 << schedule->getDepartureTime() << "|" << schedule->getArrivalTime() << "|"
+                 << schedule->getPriority() << "|" << schedule->getStatus() << "|" << schedule->getDepartureDate()
+                 << "\n";
+        }
+    }
     file.close();
 
     if (!openOutputFile(file, folder + "stops.dat"))
@@ -374,27 +370,27 @@ bool FileManager::saveAll(const RailwaySystem& system, const string& folder)
         return false;
     }
 
-    system.schedules.forEach(
-        [&](string, Schedule* schedule)
+    for (int i = 0; i < system.schedules.getSize(); ++i)
+    {
+        Schedule* schedule = system.schedules.getAt(i);
+        if (!schedule)
         {
-            if (!schedule)
+            continue;
+        }
+
+        const StopList& stops = schedule->getStops();
+
+        for (int j = 0; j < stops.getSize(); ++j)
+        {
+            const Stop* stop = stops.get(j);
+
+            if (stop)
             {
-                return;
+                file << schedule->getScheduleId() << "|" << stop->getOrder() << "|" << stop->getStationId() << "|"
+                     << stop->getArrivalTime() << "|" << stop->getDepartureTime() << "\n";
             }
-
-            const StopList& stops = schedule->getStops();
-
-            for (int i = 0; i < stops.getSize(); ++i)
-            {
-                const Stop* stop = stops.get(i);
-
-                if (stop)
-                {
-                    file << schedule->getScheduleId() << "|" << stop->getOrder() << "|" << stop->getStationId() << "|"
-                        << stop->getArrivalTime() << "|" << stop->getDepartureTime() << "\n";
-                }
-            }
-        });
+        }
+    }
     file.close();
 
     return true;

@@ -2,7 +2,7 @@
 
 Tài liệu này giải thích theo đúng thứ tự code trong `PBLQT/system/RailwaySystem.cpp` và giữ nguyên tên biến của chương trình.
 
-## Phần 1: Khởi tạo hệ thống và quản lý tàu (dòng 1–94)
+## Phần 1: Khởi tạo hệ thống và quản lý tàu (dòng 1–98)
 
 ### 1. Các file được sử dụng
 
@@ -138,30 +138,34 @@ Khai báo hàm `clearData()` của lớp `RailwaySystem`. `void` nghĩa là hàm
 Bắt đầu thân hàm.
 
 ```cpp
-trains.forEach([](string, Train* x) { delete x; });
+for (int i = 0; i < trains.getSize(); ++i)
+    delete trains.getAt(i);
 ```
 
-Duyệt tất cả phần tử trong bảng `trains`. Mỗi phần tử gồm khóa kiểu `string` và giá trị kiểu `Train*`. Tham số `string` không được đặt tên vì không cần dùng mã tàu; `delete x` giải phóng đối tượng tàu mà con trỏ `x` đang trỏ tới.
+Dùng biến `i` chạy từ `0` đến trước số lượng tàu. `trains.getAt(i)` lấy con trỏ tàu ở vị trí `i`; `delete` giải phóng đối tượng tàu đó khỏi bộ nhớ.
 
 ```cpp
-stations.forEach([](string, Station* x) { delete x; });
+for (int i = 0; i < stations.getSize(); ++i)
+    delete stations.getAt(i);
 ```
 
-Duyệt toàn bộ bảng `stations` và giải phóng từng đối tượng `Station`.
+Duyệt từng vị trí trong bảng `stations` và giải phóng từng đối tượng `Station`.
 
 ```cpp
-routes.forEach([](string, Route* x) { delete x; });
+for (int i = 0; i < routes.getSize(); ++i)
+    delete routes.getAt(i);
 ```
 
-Duyệt toàn bộ bảng `routes` và giải phóng từng đối tượng `Route`.
+Duyệt từng vị trí trong bảng `routes` và giải phóng từng đối tượng `Route`.
 
 ```cpp
-schedules.forEach([](string, Schedule* x) { delete x; });
+for (int i = 0; i < schedules.getSize(); ++i)
+    delete schedules.getAt(i);
 ```
 
-Duyệt toàn bộ bảng `schedules` và giải phóng từng đối tượng `Schedule`.
+Duyệt từng vị trí trong bảng `schedules` và giải phóng từng đối tượng `Schedule`.
 
-Bốn dòng trên giải phóng các đối tượng mà con trỏ đang trỏ tới. Các phần tử trong bảng vẫn phải được xóa ở các dòng tiếp theo.
+Bốn vòng lặp trên giải phóng các đối tượng mà con trỏ đang trỏ tới. Các phần tử trong bảng vẫn phải được xóa ở các dòng tiếp theo.
 
 ```cpp
 trains.clear();
@@ -272,28 +276,17 @@ Hàm kiểm tra tàu có mã `id` có được lịch chạy nào sử dụng kh
 Bắt đầu thân hàm.
 
 ```cpp
-bool used = false;
+for (int i = 0; i < schedules.getSize(); ++i)
 ```
 
-Ban đầu giả sử tàu chưa được lịch nào sử dụng.
-
-```cpp
-schedules.forEach(
-```
-
-Duyệt toàn bộ lịch chạy trong bảng `schedules`.
-
-```cpp
-[&](string, Schedule* s)
-```
-
-Lambda nhận mã lịch kiểu `string` nhưng không dùng đến và nhận con trỏ lịch `Schedule* s`. `[&]` cho phép lambda dùng `id` và thay đổi biến `used` bên ngoài bằng tham chiếu.
+Dùng vòng `for` duyệt lần lượt các vị trí từ `0` đến trước số lượng lịch chạy.
 
 ```cpp
 {
+    Schedule* s = schedules.getAt(i);
 ```
 
-Bắt đầu thân lambda.
+Lấy lịch chạy ở vị trí `i` và lưu đúng vào biến `Schedule* s`.
 
 ```cpp
 if (s && s->getTrainId() == id)
@@ -302,22 +295,22 @@ if (s && s->getTrainId() == id)
 Kiểm tra `s` không rỗng và mã tàu của lịch `s` bằng mã `id` cần tìm.
 
 ```cpp
-used = true;
+return true;
 ```
 
-Nếu tìm thấy một lịch dùng tàu này thì đánh dấu `used = true`.
+Nếu tìm thấy một lịch sử dụng tàu có mã `id`, hàm trả về `true` ngay vì không cần kiểm tra các lịch còn lại.
 
 ```cpp
-});
+}
 ```
 
-Kết thúc lambda và lời gọi `forEach`.
+Kết thúc vòng `for`.
 
 ```cpp
-return used;
+return false;
 ```
 
-Trả về `true` nếu có ít nhất một lịch sử dụng tàu, ngược lại trả về `false`.
+Nếu đã duyệt hết mà không tìm thấy lịch nào sử dụng tàu thì trả về `false`.
 
 ```cpp
 }
@@ -512,22 +505,17 @@ cout << "\n===== DANH SACH TAU =====\n";
 In tiêu đề danh sách tàu ra console. `\n` là ký tự xuống dòng.
 
 ```cpp
-trains.forEach(
+for (int i = 0; i < trains.getSize(); ++i)
 ```
 
-Duyệt toàn bộ phần tử trong bảng `trains`.
-
-```cpp
-[](string, Train* x)
-```
-
-Lambda nhận khóa kiểu `string` nhưng không dùng và nhận con trỏ tàu `Train* x`. `[]` rỗng nghĩa là lambda không sử dụng biến nào bên ngoài.
+Dùng vòng `for` duyệt toàn bộ các vị trí trong bảng `trains`.
 
 ```cpp
 {
+    Train* x = trains.getAt(i);
 ```
 
-Bắt đầu thân lambda.
+Lấy con trỏ tàu ở vị trí `i` và lưu vào đúng biến `Train* x`.
 
 ```cpp
 if (x)
@@ -542,10 +530,10 @@ x->displayInfo();
 Gọi `displayInfo()` của đúng đối tượng tàu `x` để in thông tin tàu.
 
 ```cpp
-});
+}
 ```
 
-Kết thúc lambda và lời gọi `forEach`.
+Kết thúc vòng `for`.
 
 ```cpp
 }
