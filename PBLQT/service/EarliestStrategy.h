@@ -6,7 +6,7 @@
 class EarliestStrategy : public SchedulingStrategy
 {
 public:
-    bool higher(const Schedule& first, const Schedule& second) const override
+    bool higher(const Schedule& first, const Schedule& second) const
     {
         long long firstTime = TimeUtils::toAbsoluteMinutes(first.getDepartureDate(), first.getDepartureTime());
         long long secondTime = TimeUtils::toAbsoluteMinutes(second.getDepartureDate(), second.getDepartureTime());

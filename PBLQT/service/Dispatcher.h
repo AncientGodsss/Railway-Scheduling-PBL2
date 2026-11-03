@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include "../data_structure/MaxHeap.h"
 #include "../data_structure/Queue.h"
@@ -105,7 +106,9 @@ public:
 
         schedule.shiftSchedule(minutes);
 
-        history.push(Operation("DELAY", schedule.getScheduleId(), "Doi lich +" + to_string(minutes) + " phut"));
+        stringstream ss;
+        ss << "Doi lich +" << minutes << " phut";
+        history.push(Operation("DELAY", schedule.getScheduleId(), ss.str()));
 
         return true;
     }

@@ -2,7 +2,6 @@
 #define GRAPH_H
 #include <iostream>
 #include <string>
-#include <limits>
 #include "DoublyLinkedList.h"
 #include "MinHeap.h"
 using namespace std;
@@ -240,7 +239,7 @@ public:
         int targetIndex = findIndex(target);
         if (startIndex < 0 || targetIndex < 0)
             return result;
-        double infinity = numeric_limits<double>::max();
+        const double infinity = 1e18;
         double* cost = new double[vertexCount];
         double* totalDistance = new double[vertexCount];
         int* totalTime = new int[vertexCount];

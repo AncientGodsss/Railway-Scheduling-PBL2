@@ -76,7 +76,7 @@ private:
     }
 
 public:
-    explicit MaxHeap(int cap = 16) : size(0), capacity(cap)
+    MaxHeap(int cap = 16) : size(0), capacity(cap)
     {
         data = new PriorityItem[capacity];
     }

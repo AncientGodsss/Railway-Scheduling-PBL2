@@ -98,7 +98,9 @@ public:
         string result = minutesToTime(totalMinutes);
         if (dayOffset > 0)
         {
-            result += " (+" + to_string(dayOffset) + " ngày)";
+            stringstream ss;
+            ss << " (+" << dayOffset << " ngày)";
+            result += ss.str();
         }
 
         return result;

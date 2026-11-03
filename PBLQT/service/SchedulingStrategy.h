@@ -8,7 +8,7 @@ class SchedulingStrategy
 public:
     virtual bool higher(const Schedule& first, const Schedule& second) const = 0;
 
-    virtual ~SchedulingStrategy() = default;
+    virtual ~SchedulingStrategy() {}
 };
 
 #endif

@@ -6,7 +6,7 @@
 class PriorityStrategy : public SchedulingStrategy
 {
 public:
-    bool higher(const Schedule& first, const Schedule& second) const override
+    bool higher(const Schedule& first, const Schedule& second) const
     {
         if (first.getPriority() != second.getPriority())
         {

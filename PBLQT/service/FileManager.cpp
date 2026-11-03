@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stdexcept>
 
 using namespace std;
 
@@ -41,6 +42,30 @@ static bool readDataLine(istream& input, string& line)
     return true;
 }
 
+static int parseInt(const string& text)
+{
+    stringstream parser(text);
+    int value = 0;
+    char extraCharacter;
+
+    if (!(parser >> value) || (parser >> extraCharacter))
+        throw runtime_error("So nguyen khong hop le trong file du lieu");
+
+    return value;
+}
+
+static double parseDouble(const string& text)
+{
+    stringstream parser(text);
+    double value = 0;
+    char extraCharacter;
+
+    if (!(parser >> value) || (parser >> extraCharacter))
+        throw runtime_error("So thuc khong hop le trong file du lieu");
+
+    return value;
+}
+
 static bool loadTrains(RailwaySystem& system, const string& path)
 {
     ifstream file(path);
@@ -71,7 +96,7 @@ static bool loadTrains(RailwaySystem& system, const string& path)
 
         try
         {
-            Train* train = new Train(id, name, type, stoi(capacity), stod(maxSpeed), status);
+            Train* train = new Train(id, name, type, parseInt(capacity), parseDouble(maxSpeed), status);
 
             if (!system.addTrain(train))
             {
@@ -115,7 +140,7 @@ static bool loadStations(RailwaySystem& system, const string& path)
 
         try
         {
-            Station* station = new Station(id, name, location, stoi(numberOfTracks));
+            Station* station = new Station(id, name, location, parseInt(numberOfTracks));
 
             if (!system.addStation(station))
             {
@@ -162,7 +187,7 @@ static bool loadRoutes(RailwaySystem& system, const string& path)
 
         try
         {
-            Route* route = new Route(id, fromStation, toStation, stod(distance), stoi(travelTime), status);
+            Route* route = new Route(id, fromStation, toStation, parseDouble(distance), parseInt(travelTime), status);
 
             if (!system.addRoute(route))
             {
@@ -217,13 +242,13 @@ static bool loadSchedules(RailwaySystem& system, const string& path)
 
         try
         {
-            int departure = stoi(departureTime);
-            int arrival = stoi(arrivalTime);
+            int departure = parseInt(departureTime);
+            int arrival = parseInt(arrivalTime);
             if (arrival <= departure)
                 arrival += 24 * 60;
 
             Schedule* schedule = new Schedule(id, trainId, departureStation, destinationStation, departure, arrival,
-                                            stoi(priority), status, departureDate);
+                                            parseInt(priority), status, departureDate);
 
             if (!system.addSchedule(schedule))
             {
@@ -275,14 +300,14 @@ static bool loadStops(RailwaySystem& system, const string& path)
             if (stationId == schedule->getDepartureStationId() || stationId == schedule->getDestinationStationId())
                 continue;
 
-            int arrival = stoi(arrivalTime);
-            int departure = stoi(departureTime);
+            int arrival = parseInt(arrivalTime);
+            int departure = parseInt(departureTime);
             while (arrival < schedule->getDepartureTime())
                 arrival += 24 * 60;
             while (departure < arrival)
                 departure += 24 * 60;
 
-            Stop stop(stationId, stoi(order), arrival, departure);
+            Stop stop(stationId, parseInt(order), arrival, departure);
 
             system.addStopToSchedule(scheduleId, stop);
         }
