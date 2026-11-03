@@ -19,10 +19,10 @@ class FileManager;
 class RailwaySystem
 {
 private:
-    TrainHashTable trains;
-    StationHashTable stations;
-    RouteHashTable routes;
-    ScheduleHashTable schedules;
+    HashTable<Train*> trains;
+    HashTable<Station*> stations;
+    HashTable<Route*> routes;
+    HashTable<Schedule*> schedules;
 
     Graph graph;
     Dispatcher dispatcher;

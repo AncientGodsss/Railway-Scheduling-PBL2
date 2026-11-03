@@ -16,9 +16,9 @@ using namespace std;
 class Dispatcher
 {
 private:
-    StringQueue waitingQueue;
+    Queue<string> waitingQueue;
     MaxHeap priorityQueue;
-    OperationStack history;
+    Stack<Operation> history;
 
     SchedulingStrategy* strategy;
 

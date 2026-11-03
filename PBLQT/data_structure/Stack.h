@@ -1,82 +1,97 @@
 #ifndef STACK_H
 #define STACK_H
-#include "../model/Operation.h"
-#include <iostream>
-struct OperationNode
+
+template <typename T>
+struct StackNode
 {
-    Operation data;
-    OperationNode* next;
-    OperationNode(const Operation& value) : data(value), next(nullptr)
+    T data;
+    StackNode<T>* next;
+
+    StackNode(const T& value) : data(value), next(nullptr)
     {
     }
 };
-class OperationStack
+
+template <typename T>
+class Stack
 {
 private:
-    OperationNode* topNode;
+    StackNode<T>* topNode;
     int size;
-    OperationStack(const OperationStack& other);
-    OperationStack& operator=(const OperationStack& other);
+
+    Stack(const Stack<T>& other);
+    Stack<T>& operator=(const Stack<T>& other);
 
 public:
-    OperationStack() : topNode(nullptr), size(0)
+    Stack() : topNode(nullptr), size(0)
     {
     }
-    ~OperationStack()
+
+    ~Stack()
     {
         clear();
     }
+
     bool isEmpty() const
     {
         return topNode == nullptr;
     }
+
     int getSize() const
     {
         return size;
     }
-    void push(const Operation& value)
+
+    void push(const T& value)
     {
-        OperationNode* node = new OperationNode(value);
+        StackNode<T>* node = new StackNode<T>(value);
         node->next = topNode;
         topNode = node;
         ++size;
     }
-    bool pop(Operation& value)
+
+    bool pop(T& value)
     {
         if (topNode == nullptr)
             return false;
-        OperationNode* temp = topNode;
+
+        StackNode<T>* temp = topNode;
         value = temp->data;
         topNode = topNode->next;
         delete temp;
         --size;
         return true;
     }
-    bool peek(Operation& value) const
+
+    bool peek(T& value) const
     {
         if (topNode == nullptr)
             return false;
+
         value = topNode->data;
         return true;
     }
+
     void displayTopToBottom() const
     {
-        OperationNode* current = topNode;
+        StackNode<T>* current = topNode;
         while (current != nullptr)
         {
             current->data.display();
             current = current->next;
         }
     }
+
     void clear()
     {
         while (topNode != nullptr)
         {
-            OperationNode* temp = topNode;
+            StackNode<T>* temp = topNode;
             topNode = topNode->next;
             delete temp;
         }
         size = 0;
     }
 };
+
 #endif

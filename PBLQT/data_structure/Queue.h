@@ -1,43 +1,52 @@
 #ifndef QUEUE_H
 #define QUEUE_H
-#include <string>
-using std::string;
+
+template <typename T>
 struct QueueNode
 {
-    string data;
-    QueueNode* next;
-    QueueNode(const string& value) : data(value), next(nullptr)
+    T data;
+    QueueNode<T>* next;
+
+    QueueNode(const T& value) : data(value), next(nullptr)
     {
     }
 };
-class StringQueue
+
+template <typename T>
+class Queue
 {
 private:
-    QueueNode* frontNode;
-    QueueNode* rearNode;
+    QueueNode<T>* frontNode;
+    QueueNode<T>* rearNode;
     int size;
-    StringQueue(const StringQueue& other);
-    StringQueue& operator=(const StringQueue& other);
+
+    Queue(const Queue<T>& other);
+    Queue<T>& operator=(const Queue<T>& other);
 
 public:
-    StringQueue() : frontNode(nullptr), rearNode(nullptr), size(0)
+    Queue() : frontNode(nullptr), rearNode(nullptr), size(0)
     {
     }
-    ~StringQueue()
+
+    ~Queue()
     {
         clear();
     }
+
     bool isEmpty() const
     {
         return frontNode == nullptr;
     }
+
     int getSize() const
     {
         return size;
     }
-    void enqueue(const string& value)
+
+    void enqueue(const T& value)
     {
-        QueueNode* node = new QueueNode(value);
+        QueueNode<T>* node = new QueueNode<T>(value);
+
         if (rearNode == nullptr)
             frontNode = rearNode = node;
         else
@@ -45,38 +54,48 @@ public:
             rearNode->next = node;
             rearNode = node;
         }
+
         ++size;
     }
-    bool dequeue(string& value)
+
+    bool dequeue(T& value)
     {
         if (frontNode == nullptr)
             return false;
-        QueueNode* temp = frontNode;
+
+        QueueNode<T>* temp = frontNode;
         value = temp->data;
         frontNode = frontNode->next;
+
         if (frontNode == nullptr)
             rearNode = nullptr;
+
         delete temp;
         --size;
         return true;
     }
-    bool peek(string& value) const
+
+    bool peek(T& value) const
     {
         if (frontNode == nullptr)
             return false;
+
         value = frontNode->data;
         return true;
     }
+
     void clear()
     {
         while (frontNode != nullptr)
         {
-            QueueNode* temp = frontNode;
+            QueueNode<T>* temp = frontNode;
             frontNode = frontNode->next;
             delete temp;
         }
+
         rearNode = nullptr;
         size = 0;
     }
 };
+
 #endif
