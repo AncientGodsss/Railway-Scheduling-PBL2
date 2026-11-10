@@ -791,21 +791,69 @@ void MainWindow::onCheckConflict()
         return;
     }
 
-    std::ostringstream oss;
-    std::streambuf* old = std::cout.rdbuf(oss.rdbuf());
-
     string reason;
     if (system.hasConflict(idA, idB, reason))
     {
-        oss << "⚠️ Đã phát hiện xung đột: " << reason;
+        // Parse reason: TYPE|detail|idA|timeA|idB|timeB
+        QString display;
+        QString qReason = QString::fromStdString(reason);
+        QStringList parts = qReason.split("|");
+
+        QString type = parts.size() > 0 ? parts[0] : "";
+        QString detail = parts.size() > 1 ? parts[1] : "";
+        QString schedA = parts.size() > 2 ? parts[2] : "";
+        QString tA = parts.size() > 3 ? parts[3] : "";
+        QString schedB = parts.size() > 4 ? parts[4] : "";
+        QString tB = parts.size() > 5 ? parts[5] : "";
+
+        if (type == "SAME_TRAIN")
+        {
+            display = QStringLiteral(u"⚠ Xung đột: Cùng tàu %1\n"
+                                      u"→ Thời gian chồng lấn!\n"
+                                      u"  %2: %3\n"
+                                      u"  %4: %5")
+                          .arg(detail, schedA, tA, schedB, tB);
+        }
+        else if (type == "SAME_ROUTE")
+        {
+            display = QStringLiteral(u"⚠ Xung đột: Cùng tuyến %1\n"
+                                      u"→ Thời gian chồng lấn!\n"
+                                      u"  %2: %3\n"
+                                      u"  %4: %5")
+                          .arg(detail, schedA, tA, schedB, tB);
+        }
+        else if (type == "SEGMENT")
+        {
+            display = QStringLiteral(u"⚠ Xung đột: Cùng đoạn đường %1\n"
+                                      u"→ Thời gian chồng lấn!\n"
+                                      u"  %2: %3\n"
+                                      u"  %4: %5")
+                          .arg(detail, schedA, tA, schedB, tB);
+        }
+        else if (type == "STATION_STOP")
+        {
+            display = QStringLiteral(u"⚠ Xung đột: Trùng giờ dừng tại ga %1\n"
+                                      u"→ Thời gian chồng lấn!\n"
+                                      u"  %2: %3\n"
+                                      u"  %4: %5")
+                          .arg(detail, schedA, tA, schedB, tB);
+        }
+        else
+        {
+            display = QStringLiteral(u"⚠ Đã phát hiện xung đột.");
+        }
+
+        ui->conflictOutput->setText(display);
     }
     else
     {
-        oss << "✅ Không có xung đột giữa 2 lịch trình này.";
+        if (reason == "NOT_FOUND")
+            ui->conflictOutput->setText(QStringLiteral(u"❌ Không tìm thấy lịch trình."));
+        else if (reason == "SAME_ID")
+            ui->conflictOutput->setText(QStringLiteral(u"❌ Hai mã lịch phải khác nhau."));
+        else
+            ui->conflictOutput->setText(QStringLiteral(u"✅ Không có xung đột giữa 2 lịch trình này."));
     }
-
-    std::cout.rdbuf(old);
-    ui->conflictOutput->setText(QString::fromUtf8(oss.str().c_str()));
 }
 
 void MainWindow::onDispatch()

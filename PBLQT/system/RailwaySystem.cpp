@@ -532,36 +532,43 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
     const Schedule* y = findSchedule(b);
     if (!x || !y)
     {
-        reason = "Khong tim thay lich";
+        reason = "NOT_FOUND";
         return false;
     }
     if (a == b)
     {
-        reason = "Hai ma lich phai khac nhau";
+        reason = "SAME_ID";
         return false;
     }
+
+    // Chuẩn bị thông tin thời gian
+    string timeA = TimeUtils::minutesToTime(x->getDepartureTime()) + "-" + TimeUtils::minutesToTime(x->getArrivalTime());
+    string timeB = TimeUtils::minutesToTime(y->getDepartureTime()) + "-" + TimeUtils::minutesToTime(y->getArrivalTime());
+    string routeA = x->getDepartureStationId() + " -> " + x->getDestinationStationId();
+    string routeB = y->getDepartureStationId() + " -> " + y->getDestinationStationId();
+
     if (detector.sameTrain(*x, *y))
     {
-        reason = "Cung tau va thoi gian bi chong lan";
+        reason = "SAME_TRAIN|" + x->getTrainId() + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
         return true;
     }
     if (detector.sameEndToEndRoute(*x, *y))
     {
-        reason = "Cung tuyen va thoi gian bi chong lan";
+        reason = "SAME_ROUTE|" + routeA + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
         return true;
     }
     string segment;
     if (detector.segmentConflict(*x, *y, segment))
     {
-        reason = "Cung doan duong: " + segment;
+        reason = "SEGMENT|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
         return true;
     }
     if (detector.stationStopConflict(*x, *y, segment))
     {
-        reason = "Trung gio dung tai ga: " + segment;
+        reason = "STATION_STOP|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
         return true;
     }
-    reason = "Khong co xung dot";
+    reason = "NONE";
     return false;
 }
 
