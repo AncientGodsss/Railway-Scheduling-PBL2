@@ -1,0 +1,50 @@
+ga trung gian, có dừng k
+1 tuyến có nhiều tàu, 
+
+
+đặt lại tên mã tàu - đặt theo có quy tắc
+
+1 tuyến tàu - 1 khung giờ 
+
+data k thể hiện được xung đột, ví dụ xung đột cùng tuyến bên khách/hàng --> giải quyết như nào, (k thể xung đột với việc khác ga đến)
+Cảnh báo xung đột (tính toán để thời gian tàu hàng/khách tới ga né giờ xuất phát tàu khác) --> phải có tính toán. Cảnh báo dời lịch sau để trách xung đột
+
+chưa thấy ứng dụng của oop 
+
+k có đường đi ngắn nhất, bỏ tìm đường
+
+phải có thuật toán tạo mã, k nhập 
+
+1 tuyến tàu 2 ga, tuyến đi tuyến về (giải quyết bài toán xung đột), 
+
+
+2 ga trên cùng 1 ga 2 hướng, A đi B đến (ktr xung đột)
+
+output: thời gian đi của 1 tàu k bị xung đột tàu khác
+
+giờ đến chỉ show kết quả
+
+lịch hợp lệ mới xuất hiện trên dashboard, 
+
+
+
+
+
+
+
+
+
+
+
+
+
+xóa lại hết data, chọn dt cố định, chọn dt test, 
+
+xóa lịch chạy (tuyến đường, nhà ga, tàu cố định). 
+
+quản lý.. là dt ban đầu, dlieu đầu vào, ứng dụng của e là đưa interface...
+demo lịch chạy --> xung đột --> điều phối --> hiện lên dashboard
+
+cùng 1 ga nhiều tàu xuất phát, làm sao xử lí mà nhiều ray, tàu đến tàu đi để demo hàng chờ
+
+ví dụ 3 ray mà 4 chuyến xuất phát từ huế thì? --> 1 tàu chờ 

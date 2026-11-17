@@ -44,7 +44,7 @@ public:
     Train* findTrain(const string& id);
     const Train* findTrain(const string& id) const;
     bool updateTrain(const string& id, const string& name, const string& type, int cap, double speed,
-                     const string& status);
+                     const string& status, const string& note = "");
     void displayTrains() const;
 
     bool addStation(Station* x);

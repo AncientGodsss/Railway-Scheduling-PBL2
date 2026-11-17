@@ -126,4 +126,84 @@ public:
     }
 };
 
+struct TrainBSTNode
+{
+    int key;
+    Train* train;
+    TrainBSTNode* left;
+    TrainBSTNode* right;
+
+    TrainBSTNode(int valueKey, Train* valueTrain)
+    {
+        key = valueKey;
+        train = valueTrain;
+        left = nullptr;
+        right = nullptr;
+    }
+};
+
+class TrainBST
+{
+private:
+    TrainBSTNode* root;
+
+    TrainBSTNode* insertNode(TrainBSTNode* node, int key, Train* train)
+    {
+        if (node == nullptr)
+        {
+            return new TrainBSTNode(key, train);
+        }
+        if (key < node->key)
+        {
+            node->left = insertNode(node->left, key, train);
+        }
+        else
+        {
+            node->right = insertNode(node->right, key, train);
+        }
+        return node;
+    }
+
+    void putAscending(TrainBSTNode* node, Train** result, int capacity, int& count) const
+    {
+        if (node == nullptr || count >= capacity)
+            return;
+        putAscending(node->left, result, capacity, count);
+        if (count < capacity)
+        {
+            result[count] = node->train;
+            count++;
+        }
+        putAscending(node->right, result, capacity, count);
+    }
+
+    void deleteTree(TrainBSTNode* node)
+    {
+        if (node == nullptr)
+            return;
+        deleteTree(node->left);
+        deleteTree(node->right);
+        delete node;
+    }
+
+public:
+    TrainBST() : root(nullptr) {}
+    ~TrainBST()
+    {
+        deleteTree(root);
+    }
+
+    void insert(int key, Train* train)
+    {
+        root = insertNode(root, key, train);
+    }
+
+    int getAscending(Train** result, int capacity) const
+    {
+        int count = 0;
+        putAscending(root, result, capacity, count);
+        return count;
+    }
+};
+
 #endif

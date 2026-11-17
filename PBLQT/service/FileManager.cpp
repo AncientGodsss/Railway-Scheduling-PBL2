@@ -84,7 +84,7 @@ static bool loadTrains(RailwaySystem& system, const string& path)
             continue;
         }
 
-        string id, name, type, capacity, maxSpeed, status;
+        string id, name, type, capacity, maxSpeed, status, note;
         stringstream parser(line);
 
         getline(parser, id, '|');
@@ -93,10 +93,11 @@ static bool loadTrains(RailwaySystem& system, const string& path)
         getline(parser, capacity, '|');
         getline(parser, maxSpeed, '|');
         getline(parser, status, '|');
+        getline(parser, note, '|');
 
         try
         {
-            Train* train = new Train(id, name, type, parseInt(capacity), parseDouble(maxSpeed), status);
+            Train* train = new Train(id, name, type, parseInt(capacity), parseDouble(maxSpeed), status, note);
 
             if (!system.addTrain(train))
             {
@@ -334,7 +335,8 @@ bool FileManager::saveAll(const RailwaySystem& system, const string& folder)
         if (train)
         {
             file << train->getTrainId() << "|" << train->getTrainName() << "|" << train->getTrainType() << "|"
-                 << train->getCapacity() << "|" << train->getMaxSpeed() << "|" << train->getStatus() << "\n";
+                 << train->getCapacity() << "|" << train->getMaxSpeed() << "|" << train->getStatus() << "|"
+                 << train->getNote() << "\n";
         }
     }
     file.close();

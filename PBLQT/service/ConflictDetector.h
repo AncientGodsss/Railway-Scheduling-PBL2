@@ -8,7 +8,7 @@ using std::string;
 
 class ConflictDetector
 {
-private:
+public:
     bool overlap(long long firstStart, long long firstEnd, long long secondStart, long long secondEnd) const
     {
         bool firstStartsBeforeSecondEnds = firstStart < secondEnd;
@@ -20,8 +20,6 @@ private:
     {
         return TimeUtils::toAbsoluteMinutes(schedule.getDepartureDate(), time);
     }
-
-public:
     bool sameTrain(const Schedule& first, const Schedule& second) const
     {
         if (first.getTrainId() != second.getTrainId())

@@ -103,11 +103,6 @@
         </item>
         <item>
          <property name="text">
-          <string>Tìm đường</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>Kiểm tra xung đột</string>
          </property>
         </item>
@@ -404,80 +399,6 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="pathTab">
-         <layout class="QVBoxLayout">
-          <item>
-           <layout class="QFormLayout">
-            <item row="0" column="0">
-             <widget class="QLabel" name="startLabel">
-              <property name="text">
-               <string>Ga bắt đầu:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="cbStart" />
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="destLabel">
-              <property name="text">
-               <string>Ga đích:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QComboBox" name="cbDest" />
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="algoLabel">
-              <property name="text">
-               <string>Thuật toán:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QComboBox" name="algoCombo">
-              <item>
-               <property name="text">
-                <string>Dijkstra - Đường ngắn nhất</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Dijkstra - Đường nhanh nhất</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout">
-            <item>
-             <widget class="QPushButton" name="btnRefreshStations">
-              <property name="text">
-               <string>Cập nhật danh sách ga</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="btnFindPath">
-              <property name="text">
-               <string>Tìm đường</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QTextEdit" name="pathOutput">
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
         <widget class="QWidget" name="conflictTab">
          <layout class="QVBoxLayout">
           <item>
@@ -485,7 +406,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="conflictALabel">
               <property name="text">
-               <string>Lịch thứ nhất:</string>
+               <string>Lịch trình A:</string>
               </property>
              </widget>
             </item>
@@ -495,7 +416,7 @@
             <item row="1" column="0">
              <widget class="QLabel" name="conflictBLabel">
               <property name="text">
-               <string>Lịch thứ hai:</string>
+               <string>Lịch trình B:</string>
               </property>
              </widget>
             </item>
@@ -503,33 +424,13 @@
              <widget class="QComboBox" name="cbConflictB" />
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="dispatchALabel">
-              <property name="text">
-               <string>Điều phối lịch A:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QComboBox" name="cbDispA" />
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="dispatchBLabel">
-              <property name="text">
-               <string>Điều phối lịch B:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QComboBox" name="cbDispB" />
-            </item>
-            <item row="4" column="0">
              <widget class="QLabel" name="strategyLabel">
               <property name="text">
                <string>Chiến lược:</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="2" column="1">
              <widget class="QComboBox" name="strategyCombo">
               <item>
                <property name="text">
@@ -598,9 +499,23 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="btnNextTrain">
+              <property name="text">
+               <string>Cấp phép xuất bến (Lấy ra)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="btnShowHistory">
               <property name="text">
                <string>Xem lịch sử</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnClearQueue">
+              <property name="text">
+               <string>Xóa hàng chờ</string>
               </property>
              </widget>
             </item>

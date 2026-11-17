@@ -80,9 +80,43 @@ public:
     {
         data = new PriorityItem[capacity];
     }
+    MaxHeap(const MaxHeap& other) : size(other.size), capacity(other.capacity)
+    {
+        data = new PriorityItem[capacity];
+        for (int i = 0; i < size; ++i)
+            data[i] = other.data[i];
+    }
+    MaxHeap& operator=(const MaxHeap& other)
+    {
+        if (this != &other)
+        {
+            delete[] data;
+            size = other.size;
+            capacity = other.capacity;
+            data = new PriorityItem[capacity];
+            for (int i = 0; i < size; ++i)
+                data[i] = other.data[i];
+        }
+        return *this;
+    }
     ~MaxHeap()
     {
         delete[] data;
+    }
+    void clear()
+    {
+        size = 0;
+    }
+    int getItemsSorted(PriorityItem* outArray, int maxCount) const
+    {
+        MaxHeap temp(*this);
+        int count = 0;
+        PriorityItem item;
+        while (count < maxCount && temp.pop(item))
+        {
+            outArray[count++] = item;
+        }
+        return count;
     }
     bool isEmpty() const
     {

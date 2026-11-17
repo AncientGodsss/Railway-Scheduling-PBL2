@@ -17,6 +17,7 @@ private:
     double maxSpeed;
 
     string status;
+    string note;
 
 public:
     Train()
@@ -24,9 +25,10 @@ public:
         capacity = 0;
         maxSpeed = 0;
         status = "INACTIVE";
+        note = "";
     }
 
-    Train(string i, string n, string t, int c, double s, string st)
+    Train(string i, string n, string t, int c, double s, string st, string nt = "")
     {
         id = i;
         name = n;
@@ -34,6 +36,7 @@ public:
         capacity = c;
         maxSpeed = s;
         status = st;
+        note = nt;
     }
 
     string getTrainId() const
@@ -64,6 +67,16 @@ public:
     string getStatus() const
     {
         return status;
+    }
+
+    string getNote() const
+    {
+        return note;
+    }
+
+    void setNote(const string& nt)
+    {
+        note = nt;
     }
 
     void setTrainName(const string& x)

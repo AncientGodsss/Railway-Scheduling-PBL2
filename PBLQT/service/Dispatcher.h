@@ -74,10 +74,52 @@ public:
     {
         if (waitingQueue.isEmpty() && priorityQueue.isEmpty())
         {
+            cout << "Hàng chờ hiện đang trống.\n(Không có tàu nào đang phải chờ)\n";
             return;
         }
 
-        cout << "\nQueue size=" << waitingQueue.getSize() << ", Priority size=" << priorityQueue.getSize() << "\n";
+        cout << "========================================\n";
+        cout << "⭐ HÀNG ĐỢI ƯU TIÊN (Priority Queue - MaxHeap) [" << priorityQueue.getSize() << " tàu]:\n";
+        if (priorityQueue.isEmpty())
+        {
+            cout << "  (Trống)\n";
+        }
+        else
+        {
+            int pSize = priorityQueue.getSize();
+            PriorityItem* items = new PriorityItem[pSize];
+            int count = priorityQueue.getItemsSorted(items, pSize);
+            for (int i = 0; i < count; ++i)
+            {
+                cout << "  " << (i + 1) << ". Tàu: " << items[i].trainId 
+                     << "  |  Mức ưu tiên: " << items[i].priority << "\n";
+            }
+            delete[] items;
+        }
+
+        cout << "\n----------------------------------------\n";
+        cout << "📋 HÀNG CHỜ THÔNG THƯỜNG (Queue - FIFO) [" << waitingQueue.getSize() << " tàu]:\n";
+        if (waitingQueue.isEmpty())
+        {
+            cout << "  (Trống)\n";
+        }
+        else
+        {
+            int index = 1;
+            for (const QueueNode<string>* cur = waitingQueue.getFrontNode(); cur; cur = cur->next)
+            {
+                cout << "  " << index++ << ". Tàu: " << cur->data 
+                     << "  (Vào trước ra trước)\n";
+            }
+        }
+        cout << "========================================\n";
+    }
+
+    void clearQueues()
+    {
+        waitingQueue.clear();
+        priorityQueue.clear();
+        history.push(Operation("CLEAR", "", "Xoa toan bo hang cho"));
     }
 
     void showHistory() const

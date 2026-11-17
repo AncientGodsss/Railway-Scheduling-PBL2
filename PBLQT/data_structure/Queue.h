@@ -43,6 +43,11 @@ public:
         return size;
     }
 
+    const QueueNode<T>* getFrontNode() const
+    {
+        return frontNode;
+    }
+
     void enqueue(const T& value)
     {
         QueueNode<T>* node = new QueueNode<T>(value);

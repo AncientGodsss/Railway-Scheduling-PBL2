@@ -73,7 +73,7 @@ bool RailwaySystem::removeTrain(const string& id)
 }
 
 bool RailwaySystem::updateTrain(const string& id, const string& name, const string& type, int cap, double speed,
-                                const string& status)
+                                const string& status, const string& note)
 {
     Train* x = findTrain(id);
     if (!x || name.empty() || type.empty() || cap <= 0 || speed <= 0 || status.empty())
@@ -83,6 +83,7 @@ bool RailwaySystem::updateTrain(const string& id, const string& name, const stri
     x->setCapacity(cap);
     x->setMaxSpeed(speed);
     x->setStatus(status);
+    x->setNote(note);
     return true;
 }
 
@@ -565,8 +566,72 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
     }
     if (detector.stationStopConflict(*x, *y, segment))
     {
-        reason = "STATION_STOP|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
-        return true;
+        // Kiểm tra số đường ray của ga
+        const Station* st = findStation(segment);
+        int trackLimit = st ? st->getNumberOfTracks() : 1;
+
+        // Đếm tổng số tàu dừng tại ga này trong khoảng thời gian trùng nhau
+        // Thu thập khoảng thời gian trùng nhau giữa x và y tại ga segment
+        long long overlapStart = -1, overlapEnd = -1;
+        const StopList& stopsX = x->getStops();
+        const StopList& stopsY = y->getStops();
+        for (int i = 0; i < stopsX.getSize(); ++i)
+        {
+            const Stop* sx = stopsX.get(i);
+            if (!sx || sx->getStationId() != segment) continue;
+            for (int j = 0; j < stopsY.getSize(); ++j)
+            {
+                const Stop* sy = stopsY.get(j);
+                if (!sy || sy->getStationId() != segment) continue;
+                long long arrX = detector.absoluteTime(*x, sx->getArrivalTime());
+                long long depX = detector.absoluteTime(*x, sx->getDepartureTime());
+                long long arrY = detector.absoluteTime(*y, sy->getArrivalTime());
+                long long depY = detector.absoluteTime(*y, sy->getDepartureTime());
+                if (detector.overlap(arrX, depX, arrY, depY))
+                {
+                    overlapStart = (arrX > arrY) ? arrX : arrY;
+                    overlapEnd = (depX < depY) ? depX : depY;
+                    break;
+                }
+            }
+            if (overlapStart != -1) break;
+        }
+
+        // Đếm xem trong toàn hệ thống có bao nhiêu lịch đỗ tại ga 'segment' trong khoảng [overlapStart, overlapEnd]
+        int overlappingTrains = 0;
+        for (int sIdx = 0; sIdx < getScheduleCount(); ++sIdx)
+        {
+            Schedule* other = getScheduleAt(sIdx);
+            if (!other) continue;
+            const StopList& otherStops = other->getStops();
+            for (int oIdx = 0; oIdx < otherStops.getSize(); ++oIdx)
+            {
+                const Stop* so = otherStops.get(oIdx);
+                if (so && so->getStationId() == segment)
+                {
+                    long long arrO = detector.absoluteTime(*other, so->getArrivalTime());
+                    long long depO = detector.absoluteTime(*other, so->getDepartureTime());
+                    if (detector.overlap(overlapStart, overlapEnd, arrO, depO))
+                    {
+                        overlappingTrains++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (overlappingTrains > trackLimit)
+        {
+            // Vượt quá sức chứa đường ray của ga!
+            reason = "STATION_OVERLOAD|" + segment + "|" + to_string(trackLimit) + "|" + to_string(overlappingTrains) + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
+            return true;
+        }
+        else if (trackLimit <= 1)
+        {
+            // Ga chỉ có 1 đường ray thì trùng nhau là xung đột
+            reason = "STATION_STOP|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
+            return true;
+        }
     }
     reason = "NONE";
     return false;
@@ -605,7 +670,7 @@ bool RailwaySystem::dispatch(const string& a, const string& b)
     if (shift <= 0)
         shift = BUFFER;
 
-    if (dispatcher.shiftSchedule(*lower, shift))
+    if (lower->getArrivalTime() + shift <= 1440 && dispatcher.shiftSchedule(*lower, shift))
         return true;
 
     long long higherDeparture = TimeUtils::toAbsoluteMinutes(higher->getDepartureDate(), higher->getDepartureTime());
@@ -613,13 +678,14 @@ bool RailwaySystem::dispatch(const string& a, const string& b)
     int earlyShift = static_cast<int>(higherDeparture - (lowerArrival + BUFFER));
     if (earlyShift > 0 && higher->getDepartureTime() - earlyShift >= 0)
     {
-
         higher->shiftSchedule(-earlyShift);
-        dispatcher.addWaiting(higher->getTrainId());
+        string label = higher->getTrainId() + " (Lịch " + higher->getScheduleId() + ": " + higher->getDepartureStationId() + "->" + higher->getDestinationStationId() + ")";
+        dispatcher.addPriority(label, higher->getPriority());
         return true;
     }
 
-    dispatcher.addWaiting(lower->getTrainId());
+    string label = lower->getTrainId() + " (Lịch " + lower->getScheduleId() + ": " + lower->getDepartureStationId() + "->" + lower->getDestinationStationId() + ")";
+    dispatcher.addPriority(label, lower->getPriority());
     return false;
 }
 

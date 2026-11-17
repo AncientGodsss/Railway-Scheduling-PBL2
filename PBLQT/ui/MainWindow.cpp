@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     qApp->setStyleSheet(appStyleSheet());
     connect(ui->navigationList, &QListWidget::currentRowChanged, ui->stackedWidget, &QStackedWidget::setCurrentIndex);
-    setupTable(ui->trainTable, {"Mã tàu", "Tên tàu", "Loại", "Sức chứa", "Tốc độ", "Trạng thái"});
+    setupTable(ui->trainTable, {"Mã tàu", "Tên tàu", "Loại", "Sức chứa", "Tốc độ", "Trạng thái", "Ghi chú"});
     setupTable(ui->stationTable, {"Mã ga", "Tên ga", "Vị trí", "Số đường ray"});
     setupTable(ui->routeTable, {"Mã tuyến", "Ga đầu", "Ga cuối", "Khoảng cách", "Thời gian", "Trạng thái"});
     setupTable(ui->scheduleTable,
@@ -64,15 +64,15 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->btnDeleteStop, &QPushButton::clicked, this, &MainWindow::onDeleteStop);
     connect(ui->btnSortTime, &QPushButton::clicked, this, &MainWindow::onSortByTime);
     connect(ui->btnSortPriority, &QPushButton::clicked, this, &MainWindow::onSortByPriority);
-    connect(ui->btnRefreshStations, &QPushButton::clicked, this, &MainWindow::refreshStationSelectors);
-    connect(ui->btnFindPath, &QPushButton::clicked, this, &MainWindow::onFindPath);
     connect(ui->btnRefreshSchedules, &QPushButton::clicked, this, &MainWindow::refreshScheduleSelectors);
     connect(ui->btnCheckConflict, &QPushButton::clicked, this, &MainWindow::onCheckConflict);
     connect(ui->btnDispatch, &QPushButton::clicked, this, &MainWindow::onDispatch);
     connect(ui->strategyCombo, qOverload<int>(&QComboBox::currentIndexChanged), this, &MainWindow::onChangeStrategy);
     connect(ui->btnShowQueue, &QPushButton::clicked, this, &MainWindow::onShowQueue);
     connect(ui->btnAddQueue, &QPushButton::clicked, this, &MainWindow::onAddToQueue);
+    connect(ui->btnNextTrain, &QPushButton::clicked, this, &MainWindow::onNextTrain);
     connect(ui->btnShowHistory, &QPushButton::clicked, this, &MainWindow::onShowHistory);
+    connect(ui->btnClearQueue, &QPushButton::clicked, this, &MainWindow::onClearQueue);
     connect(ui->actionLoad, &QAction::triggered, this, &MainWindow::onLoad);
     connect(ui->actionSave, &QAction::triggered, this, &MainWindow::onSave);
     connect(ui->actionQuit, &QAction::triggered, this, &QWidget::close);
@@ -81,7 +81,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     refreshStationTable();
     refreshRouteTable();
     refreshScheduleTable();
-    refreshStationSelectors();
     refreshScheduleSelectors();
 }
 MainWindow::~MainWindow()
@@ -89,43 +88,56 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::refreshStationSelectors()
-{
-    ui->cbStart->clear();
-    ui->cbDest->clear();
-
-    for (int i = 0; i < system.getStationCount(); ++i)
-    {
-        Station* station = system.getStationAt(i);
-        if (!station)
-            continue;
-
-        QString id = QString::fromStdString(station->getStationId());
-        QString text = id + " - " + QString::fromStdString(station->getStationName());
-        ui->cbStart->addItem(text, id);
-        ui->cbDest->addItem(text, id);
-    }
-}
 void MainWindow::refreshScheduleSelectors()
 {
-    QComboBox* boxes[] = {ui->cbConflictA, ui->cbConflictB, ui->cbDispA, ui->cbDispB};
-    int boxCount = 4;
+    QComboBox* boxes[] = {ui->cbConflictA, ui->cbConflictB};
+    int boxCount = 2;
 
     for (int i = 0; i < boxCount; ++i)
         boxes[i]->clear();
 
-    for (int i = 0; i < system.getScheduleCount(); ++i)
+    int total = system.getScheduleCount();
+    if (total == 0)
+        return;
+
+    ScheduleBST bst;
+    for (int i = 0; i < total; ++i)
     {
-        Schedule* schedule = system.getScheduleAt(i);
+        Schedule* s = system.getScheduleAt(i);
+        if (!s)
+            continue;
+        string sid = s->getScheduleId();
+        int num = 0;
+        for (char c : sid)
+            if (isdigit(static_cast<unsigned char>(c)))
+                num = num * 10 + (c - '0');
+        bst.insert(num, s);
+    }
+
+    Schedule** sortedSchedules = new Schedule*[total];
+    int count = bst.getAscending(sortedSchedules, total);
+
+    for (int i = 0; i < count; ++i)
+    {
+        Schedule* schedule = sortedSchedules[i];
         if (!schedule)
             continue;
 
         QString id = QString::fromStdString(schedule->getScheduleId());
+        QString trainId = QString::fromStdString(schedule->getTrainId());
+        QString depStation = QString::fromStdString(schedule->getDepartureStationId());
+        QString destStation = QString::fromStdString(schedule->getDestinationStationId());
+        QString depTime = QString::fromStdString(TimeUtils::minutesToDisplay(schedule->getDepartureTime()));
+        QString arrTime = QString::fromStdString(TimeUtils::minutesToDisplay(schedule->getArrivalTime()));
+        QString text = QString("[%1] Tàu %2: %3 -> %4 (%5 - %6)")
+                           .arg(id, trainId, depStation, destStation, depTime, arrTime);
+
         for (int j = 0; j < boxCount; ++j)
         {
-            boxes[j]->addItem(id, id);
+            boxes[j]->addItem(text, id);
         }
     }
+    delete[] sortedSchedules;
 }
 
 static QString translateStatus(const string& st)
@@ -207,14 +219,104 @@ void MainWindow::fillScheduleRow(QTableWidget* t, Schedule* s)
     t->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(TimeUtils::minutesToDisplay(s->getArrivalTime()))));
     t->setItem(row, 7, new QTableWidgetItem(QString::number(s->getPriority())));
     t->setItem(row, 8, new QTableWidgetItem(translateStatus(s->getStatus())));
+
+    // Kiểm tra trạng thái tàu - cảnh báo nếu tàu tạm ngưng hoặc bảo trì
+    Train* train = system.findTrain(s->getTrainId());
+    bool trainProblem = false;
+    QString trainWarning;
+    if (!train)
+    {
+        trainProblem = true;
+        trainWarning = QStringLiteral(u"⚠ Tàu không tồn tại");
+    }
+    else
+    {
+        QString trainStatus = translateStatus(train->getStatus());
+        if (trainStatus == QStringLiteral(u"Tạm ngưng") || train->getStatus() == "INACTIVE")
+        {
+            trainProblem = true;
+            trainWarning = QStringLiteral(u"⚠ Tàu tạm ngưng");
+        }
+        else if (trainStatus == QStringLiteral(u"Bảo trì") || train->getStatus() == "MAINTENANCE")
+        {
+            trainProblem = true;
+            trainWarning = QStringLiteral(u"⚠ Tàu đang bảo trì");
+        }
+    }
+
+    if (trainProblem)
+    {
+        QColor warnBg(255, 235, 235);   // nền đỏ nhạt
+        QColor warnFg(180, 30, 30);     // chữ đỏ đậm
+        for (int c = 0; c < t->columnCount(); ++c)
+        {
+            QTableWidgetItem* item = t->item(row, c);
+            if (item)
+                item->setBackground(warnBg);
+        }
+        // Cập nhật cột trạng thái để hiển thị cảnh báo
+        QTableWidgetItem* statusItem = t->item(row, 8);
+        if (statusItem)
+        {
+            statusItem->setText(statusItem->text() + " " + trainWarning);
+            statusItem->setForeground(warnFg);
+        }
+        // Tô đỏ cột mã tàu
+        QTableWidgetItem* trainItem = t->item(row, 1);
+        if (trainItem)
+            trainItem->setForeground(warnFg);
+    }
 }
 
 void MainWindow::refreshTrainTable()
 {
     ui->trainTable->setRowCount(0);
-    for (int i = 0; i < system.getTrainCount(); ++i)
+    int total = system.getTrainCount();
+    if (total == 0)
+    {
+        updateStats();
+        return;
+    }
+
+    TrainBST bst;
+    for (int i = 0; i < total; ++i)
     {
         Train* t = system.getTrainAt(i);
+        if (!t)
+            continue;
+        string tid = t->getTrainId();
+        int num = 0;
+        int base = 0;
+        if (tid.rfind("SE", 0) == 0)
+        {
+            base = 1000;
+            for (char c : tid)
+                if (isdigit(static_cast<unsigned char>(c)))
+                    num = num * 10 + (c - '0');
+        }
+        else if (tid.rfind("HH", 0) == 0)
+        {
+            base = 2000;
+            for (char c : tid)
+                if (isdigit(static_cast<unsigned char>(c)))
+                    num = num * 10 + (c - '0');
+        }
+        else
+        {
+            base = 3000;
+            for (char c : tid)
+                if (isdigit(static_cast<unsigned char>(c)))
+                    num = num * 10 + (c - '0');
+        }
+        bst.insert(base + num, t);
+    }
+
+    Train** sortedTrains = new Train*[total];
+    int count = bst.getAscending(sortedTrains, total);
+
+    for (int i = 0; i < count; ++i)
+    {
+        Train* t = sortedTrains[i];
         if (!t)
             continue;
 
@@ -228,7 +330,9 @@ void MainWindow::refreshTrainTable()
 
         QTableWidgetItem* status = new QTableWidgetItem(translateStatus(t->getStatus()));
         ui->trainTable->setItem(row, 5, status);
+        ui->trainTable->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(t->getNote())));
     }
+    delete[] sortedTrains;
     updateStats();
 }
 
@@ -275,12 +379,37 @@ void MainWindow::refreshRouteTable()
 void MainWindow::refreshScheduleTable()
 {
     ui->scheduleTable->setRowCount(0);
-    for (int i = 0; i < system.getScheduleCount(); ++i)
+    int total = system.getScheduleCount();
+    if (total == 0)
+    {
+        updateStats();
+        return;
+    }
+
+    ScheduleBST bst;
+    for (int i = 0; i < total; ++i)
     {
         Schedule* s = system.getScheduleAt(i);
-        fillScheduleRow(ui->scheduleTable, s);
+        if (!s)
+            continue;
+        string sid = s->getScheduleId();
+        int num = 0;
+        for (char c : sid)
+            if (isdigit(static_cast<unsigned char>(c)))
+                num = num * 10 + (c - '0');
+        bst.insert(num, s);
     }
+
+    Schedule** sortedSchedules = new Schedule*[total];
+    int count = bst.getAscending(sortedSchedules, total);
+
+    for (int i = 0; i < count; ++i)
+    {
+        fillScheduleRow(ui->scheduleTable, sortedSchedules[i]);
+    }
+    delete[] sortedSchedules;
     updateStats();
+    refreshScheduleSelectors();
 }
 
 void MainWindow::updateStats()
@@ -329,7 +458,7 @@ void MainWindow::onEditTrain()
     if (dlg.exec() == QDialog::Accepted)
     {
         TrainData d = dlg.getData();
-        system.updateTrain(id.toStdString(), d.name, d.type, d.capacity, d.maxSpeed, d.status);
+        system.updateTrain(id.toStdString(), d.name, d.type, d.capacity, d.maxSpeed, d.status, d.note);
         refreshTrainTable();
     }
 }
@@ -731,49 +860,6 @@ void MainWindow::onSortByPriority()
     delete[] result;
 }
 
-void MainWindow::onFindPath()
-{
-    QComboBox* cbStart = findChild<QComboBox*>("cbStart");
-    QComboBox* cbDest = findChild<QComboBox*>("cbDest");
-    QComboBox* algo = findChild<QComboBox*>("algoCombo");
-    if (!cbStart || !cbDest || !algo)
-        return;
-
-    string start = cbStart->currentData().toString().trimmed().toUpper().toStdString();
-    string dest = cbDest->currentData().toString().trimmed().toUpper().toStdString();
-    int choice = algo->currentIndex();
-    if (start.empty() || dest.empty())
-    {
-        QMessageBox::warning(this, QStringLiteral(u"Lỗi"), QStringLiteral(u"Vui lòng chọn đầy đủ ga bắt đầu và ga đích."));
-        return;
-    }
-
-    std::ostringstream oss;
-    PathResult r = system.shortestPath(start, dest, choice == 0);
-    if (!r.found)
-    {
-        oss << "❌  Không tìm thấy đường từ [" << start << "] đến [" << dest << "].";
-    }
-    else
-    {
-        oss << "✅  Đường đi: ";
-        for (int i = 0; i < r.path.getSize(); ++i)
-        {
-            const string* x = r.path.get(i);
-            if (x)
-            {
-                oss << *x;
-                if (i < r.path.getSize() - 1)
-                    oss << " → ";
-            }
-        }
-        oss << "\n📏  Khoảng cách: " << r.distance << " km\n";
-        oss << "⏱  Thời gian   : " << r.travelTime << " phút\n";
-    }
-
-    ui->pathOutput->setText(QString::fromUtf8(oss.str().c_str()));
-}
-
 void MainWindow::onCheckConflict()
 {
     QComboBox* cbCA = findChild<QComboBox*>("cbConflictA");
@@ -838,6 +924,23 @@ void MainWindow::onCheckConflict()
                                       u"  %4: %5")
                           .arg(detail, schedA, tA, schedB, tB);
         }
+        else if (type == "STATION_OVERLOAD")
+        {
+            // detail: stationId, parts[2]: maxTracks, parts[3]: currentTrains, parts[4]: schedA...
+            QString stationId = detail;
+            QString maxTracks = parts.size() > 2 ? parts[2] : "";
+            QString trainCount = parts.size() > 3 ? parts[3] : "";
+            QString sA = parts.size() > 4 ? parts[4] : "";
+            QString timeA = parts.size() > 5 ? parts[5] : "";
+            QString sB = parts.size() > 6 ? parts[6] : "";
+            QString timeB = parts.size() > 7 ? parts[7] : "";
+
+            display = QStringLiteral(u"⚠ Xung đột quá tải ga: Ga %1 chỉ có %2 đường ray nhưng có %3 tàu đỗ cùng thời điểm!\n"
+                                      u"→ Vượt quá sức chứa ga!\n"
+                                      u"  %4: %5\n"
+                                      u"  %6: %7")
+                          .arg(stationId, maxTracks, trainCount, sA, timeA, sB, timeB);
+        }
         else
         {
             display = QStringLiteral(u"⚠ Đã phát hiện xung đột.");
@@ -858,13 +961,13 @@ void MainWindow::onCheckConflict()
 
 void MainWindow::onDispatch()
 {
-    QComboBox* cbDA = findChild<QComboBox*>("cbDispA");
-    QComboBox* cbDB = findChild<QComboBox*>("cbDispB");
-    if (!cbDA || !cbDB)
+    QComboBox* cbCA = findChild<QComboBox*>("cbConflictA");
+    QComboBox* cbCB = findChild<QComboBox*>("cbConflictB");
+    if (!cbCA || !cbCB)
         return;
 
-    string idA = cbDA->currentData().toString().trimmed().toStdString();
-    string idB = cbDB->currentData().toString().trimmed().toStdString();
+    string idA = cbCA->currentData().toString().trimmed().toStdString();
+    string idB = cbCB->currentData().toString().trimmed().toStdString();
 
     if (idA.empty() || idB.empty())
     {
@@ -883,12 +986,15 @@ void MainWindow::onDispatch()
     if (resolved)
     {
         ui->conflictOutput->setText(
-            QStringLiteral(u"Điều phối thành công. Một lịch đã được đổi giờ để tránh xung đột."));
+            QStringLiteral(u"✅ ĐIỀU PHỐI THÀNH CÔNG!\n"
+                           u"Lịch trình có mức ưu tiên thấp hơn đã được lùi giờ hợp lý để tránh xung đột."));
     }
     else
     {
         ui->conflictOutput->setText(
-            QStringLiteral(u"Không thể đổi giờ trong ngày. Tàu có mức ưu tiên thấp hơn đã được đưa vào hàng chờ."));
+            QStringLiteral(u"⚠ KHÔNG THỂ DỜI GIỜ TRONG NGÀY (vượt quá 24:00)!\n"
+                           u"Tàu có mức ưu tiên thấp hơn đã được tự động đưa vào HÀNG ĐỢI ƯU TIÊN (MaxHeap).\n"
+                           u"👉 Vui lòng mở tab 'Hàng chờ' để xem chi tiết và cấp phép xuất bến khi đường ray trống."));
     }
     refreshScheduleTable();
 }
@@ -914,22 +1020,131 @@ void MainWindow::onShowQueue()
     std::streambuf* old = std::cout.rdbuf(oss.rdbuf());
     system.getDispatcher().showQueues();
     std::cout.rdbuf(old);
-    ui->queueOutput->setPlainText(QString::fromStdString(oss.str()).trimmed());
+    ui->queueOutput->setPlainText(QString::fromUtf8(oss.str().c_str()));
 }
 void MainWindow::onAddToQueue()
 {
-    bool ok;
-    QString id = QInputDialog::getText(this, "Thêm vào hàng chờ", "Mã tàu:", QLineEdit::Normal, "", &ok);
-    if (!ok || id.trimmed().isEmpty())
-        return;
-    if (system.findTrain(id.trimmed().toStdString()))
+    QStringList scheduleOptions;
+    QList<Schedule*> scheduleList;
+
+    for (int i = 0; i < system.getScheduleCount(); ++i)
     {
-        system.getDispatcher().addWaiting(id.trimmed().toStdString());
-        ui->queueOutput->append(QString("✅  Đã thêm tàu [%1] vào hàng chờ.").arg(id));
+        Schedule* s = system.getScheduleAt(i);
+        if (s)
+        {
+            scheduleList.append(s);
+            QString depTime = QString::fromStdString(TimeUtils::minutesToDisplay(s->getDepartureTime()));
+            QString arrTime = QString::fromStdString(TimeUtils::minutesToDisplay(s->getArrivalTime()));
+            QString text = QString("[%1] Tàu %2: %3 -> %4 (%5 - %6 | Ưu tiên: %7)")
+                               .arg(QString::fromStdString(s->getScheduleId()))
+                               .arg(QString::fromStdString(s->getTrainId()))
+                               .arg(QString::fromStdString(s->getDepartureStationId()))
+                               .arg(QString::fromStdString(s->getDestinationStationId()))
+                               .arg(depTime, arrTime)
+                               .arg(s->getPriority());
+            scheduleOptions.append(text);
+        }
+    }
+
+    if (scheduleOptions.isEmpty())
+    {
+        QMessageBox::warning(this, "Thông báo", "Hệ thống chưa có lịch trình nào!");
+        return;
+    }
+
+    scheduleOptions.append(QString::fromUtf8("➕ Nhập mã tàu thủ công khác..."));
+
+    bool ok = false;
+    QString chosenSchedule = QInputDialog::getItem(this, "Chọn lịch trình đưa vào hàng chờ",
+                                                   "Chọn lịch trình cần hoãn / đưa vào hàng chờ:",
+                                                   scheduleOptions, 0, false, &ok);
+    if (!ok || chosenSchedule.isEmpty())
+        return;
+
+    QString label;
+    int priority = 80;
+
+    if (chosenSchedule.startsWith(QString::fromUtf8("➕")))
+    {
+        QString id = QInputDialog::getText(this, "Nhập thủ công", "Nhập mã tàu:", QLineEdit::Normal, "", &ok);
+        if (!ok || id.trimmed().isEmpty())
+            return;
+        id = id.trimmed().toUpper();
+        Train* t = system.findTrain(id.toStdString());
+        if (!t)
+        {
+            QMessageBox::warning(this, "Lỗi", QString("Không tìm thấy tàu [%1] trong hệ thống.").arg(id));
+            return;
+        }
+        label = id;
     }
     else
     {
-        QMessageBox::warning(this, "Lỗi", QString("Không tìm thấy tàu [%1].").arg(id));
+        int selectedIndex = scheduleOptions.indexOf(chosenSchedule);
+        if (selectedIndex >= 0 && selectedIndex < scheduleList.size())
+        {
+            Schedule* s = scheduleList[selectedIndex];
+            priority = s->getPriority();
+            label = QString("%1 (Lịch %2: %3 -> %4)")
+                        .arg(QString::fromStdString(s->getTrainId()))
+                        .arg(QString::fromStdString(s->getScheduleId()))
+                        .arg(QString::fromStdString(s->getDepartureStationId()))
+                        .arg(QString::fromStdString(s->getDestinationStationId()));
+        }
+    }
+
+    if (label.isEmpty())
+        return;
+
+    QStringList options;
+    options << QString("1. Hàng đợi ưu tiên (MaxHeap) - Mức ưu tiên: %1").arg(priority)
+            << "2. Hàng chờ thông thường (Queue FIFO - Vào trước ra trước)";
+
+    QString chosen = QInputDialog::getItem(this, "Chọn loại hàng chờ",
+                                          QString("Đối tượng: %1\nChọn loại hàng chờ:").arg(label),
+                                          options, 0, false, &ok);
+    if (!ok || chosen.isEmpty())
+        return;
+
+    if (chosen.startsWith("1"))
+    {
+        int prio = QInputDialog::getInt(this, "Mức ưu tiên", "Xác nhận mức ưu tiên (1 - 100):", priority, 1, 100, 1, &ok);
+        if (!ok)
+            return;
+
+        system.getDispatcher().addPriority(label.toStdString(), prio);
+        ui->queueOutput->append(QString("⭐ Đã thêm [%1] vào Hàng đợi ưu tiên (Mức: %2).").arg(label).arg(prio));
+    }
+    else
+    {
+        system.getDispatcher().addWaiting(label.toStdString());
+        ui->queueOutput->append(QString("📋 Đã thêm [%1] vào Hàng chờ thông thường (FIFO).").arg(label));
+    }
+    onShowQueue();
+}
+
+void MainWindow::onNextTrain()
+{
+    string next = system.getDispatcher().nextTrain();
+    if (next.empty())
+    {
+        QMessageBox::information(this, "Thông báo", "Hàng chờ hiện đang trống, không có tàu nào cần cấp phép!");
+        return;
+    }
+
+    QMessageBox::information(this, "Cấp phép xuất bến",
+                             QString("🚀 ĐÃ CẤP PHÉP XUẤT BẾN!\n\n"
+                                     "Tàu [%1] đã được rút khỏi hàng chờ và cấp lệnh xuất phát.\n"
+                                     "(Đã lưu vết vào Lịch sử điều phối).").arg(QString::fromStdString(next)));
+    onShowQueue();
+}
+
+void MainWindow::onClearQueue()
+{
+    if (QMessageBox::question(this, "Xác nhận", "Bạn có chắc chắn muốn xóa toàn bộ hàng chờ?") == QMessageBox::Yes)
+    {
+        system.getDispatcher().clearQueues();
+        onShowQueue();
     }
 }
 void MainWindow::onShowHistory()
@@ -949,7 +1164,6 @@ void MainWindow::onLoad()
         refreshStationTable();
         refreshRouteTable();
         refreshScheduleTable();
-        refreshStationSelectors();
         refreshScheduleSelectors();
         QMessageBox::information(this, "Thành công", "✅  Đọc dữ liệu thành công!");
     }

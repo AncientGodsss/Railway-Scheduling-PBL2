@@ -134,6 +134,20 @@
        </item>
       </widget>
      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label6">
+        <property name="text">
+         <string>Ghi chú:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="leNote">
+        <property name="placeholderText">
+         <string>Ví dụ: VIP, Ban ngày, Sáng sớm...</string>
+        </property>
+       </widget>
+      </item>
     </layout>
    </item>
    <item>

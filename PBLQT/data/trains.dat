@@ -1,15 +1,15 @@
-KH10|SE6|Passenger|450|110|ACTIVE
-KH11|SE8|Passenger|500|110|ACTIVE
-KH12|TN2|Passenger|400|100|ACTIVE
-KH1|SE1|Passenger|500|120|ACTIVE
-KH2|SE3|Passenger|450|120|ACTIVE
-KH3|SE5|Passenger|450|110|ACTIVE
-KH4|SE7|Passenger|500|110|ACTIVE
-KH5|SE19|Passenger|400|100|ACTIVE
-KH6|TN1|Passenger|400|100|ACTIVE
-KH7|TN3|Passenger|400|100|ACTIVE
-KH8|SE2|Passenger|500|120|ACTIVE
-KH9|SE4|Passenger|450|120|ACTIVE
-HH1|HH01|Freight|800|90|ACTIVE
-HH2|HH03|Freight|850|90|ACTIVE
-HH3|HH05|Freight|850|80|ACTIVE
+﻿SE1|Tàu SE1|Passenger|500|120|ACTIVE|VIP
+SE2|Tàu SE2|Passenger|500|120|ACTIVE|VIP
+SE3|Tàu SE3|Passenger|480|120|ACTIVE|Chạy nhanh, cao cấp
+SE4|Tàu SE4|Passenger|480|120|ACTIVE|Chạy nhanh, cao cấp
+SE5|Tàu SE5|Passenger|450|110|ACTIVE|Ban ngày
+SE6|Tàu SE6|Passenger|450|110|ACTIVE|Ban ngày
+SE7|Tàu SE7|Passenger|450|110|ACTIVE|Sáng sớm
+SE8|Tàu SE8|Passenger|450|110|ACTIVE|Sáng sớm
+SE9|Tàu SE9|Passenger|420|100|ACTIVE|Bổ sung
+SE10|Tàu SE10|Passenger|420|100|ACTIVE|Bổ sung
+SE11|Tàu SE11|Passenger|400|100|ACTIVE|Tăng cường (Lễ Tết)
+SE12|Tàu SE12|Passenger|400|100|ACTIVE|Tăng cường (Lễ Tết)
+HH1|Tàu HH1|Freight|800|90|ACTIVE|Tàu hàng Bắc - Nam
+HH2|Tàu HH2|Freight|850|90|ACTIVE|Tàu hàng Nam - Bắc
+HH3|Tàu HH3|Freight|850|80|ACTIVE|Tàu hàng khu đoạn

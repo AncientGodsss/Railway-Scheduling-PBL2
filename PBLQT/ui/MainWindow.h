@@ -40,13 +40,14 @@ private slots:
     void onSortByTime();
     void onSortByPriority();
     void refreshScheduleTable();
-    void onFindPath();
     void onCheckConflict();
     void onDispatch();
     void onChangeStrategy();
     void onShowQueue();
     void onAddToQueue();
+    void onNextTrain();
     void onShowHistory();
+    void onClearQueue();
     void onLoad();
     void onSave();
 
@@ -54,7 +55,6 @@ private:
     Ui::MainWindow* ui;
     RailwaySystem system;
     void updateStats();
-    void refreshStationSelectors();
     void refreshScheduleSelectors();
     QString selectedId(QTableWidget* table, int col = 0) const;
     void fillScheduleRow(QTableWidget* table, Schedule* schedule);

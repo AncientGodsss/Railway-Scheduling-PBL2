@@ -10,6 +10,7 @@ ScheduleDialog::ScheduleDialog(QWidget* parent, RailwaySystem* system)
     ui->teDep->setTime(QTime(8, 0));
     ui->teArr->setTime(QTime(16, 0));
     ui->teArr->setReadOnly(sys != nullptr);
+    ui->teArr->setButtonSymbols(QAbstractSpinBox::NoButtons);
     ui->btnCalc->setVisible(sys != nullptr);
     if (sys)
     {
@@ -66,6 +67,7 @@ void ScheduleDialog::autoCalcArrival()
     int arr = dep + result.travelTime;
     ui->teArr->setTime(QTime((arr / 60) % 24, arr % 60));
     ui->teArr->setReadOnly(true);
+    ui->teArr->setButtonSymbols(QAbstractSpinBox::NoButtons);
     QString path;
     for (int i = 0; i < result.path.getSize(); ++i)
     {

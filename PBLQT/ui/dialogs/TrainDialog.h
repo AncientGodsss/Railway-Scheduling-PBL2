@@ -8,7 +8,7 @@ class TrainDialog;
 }
 struct TrainData
 {
-    std::string name, type, status;
+    std::string name, type, status, note;
     int capacity;
     double maxSpeed;
 };

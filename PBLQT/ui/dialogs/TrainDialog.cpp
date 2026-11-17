@@ -17,6 +17,7 @@ TrainDialog::TrainDialog(QWidget* parent, Train* t) : QDialog(parent), ui(new Ui
     ui->sbCapacity->setValue(t->getCapacity());
     ui->dsbSpeed->setValue(t->getMaxSpeed());
     ui->cbStatus->setCurrentText(QString::fromStdString(t->getStatus()));
+    ui->leNote->setText(QString::fromStdString(t->getNote()));
 }
 TrainDialog::~TrainDialog()
 {
@@ -26,12 +27,13 @@ Train* TrainDialog::getTrain() const
 {
     return new Train(ui->leId->text().trimmed().toStdString(), ui->leName->text().trimmed().toStdString(),
                      ui->cbType->currentText().toStdString(), ui->sbCapacity->value(), ui->dsbSpeed->value(),
-                     ui->cbStatus->currentText().toStdString());
+                     ui->cbStatus->currentText().toStdString(), ui->leNote->text().trimmed().toStdString());
 }
 TrainData TrainDialog::getData() const
 {
     return {ui->leName->text().trimmed().toStdString(), ui->cbType->currentText().toStdString(),
-            ui->cbStatus->currentText().toStdString(), ui->sbCapacity->value(), ui->dsbSpeed->value()};
+            ui->cbStatus->currentText().toStdString(), ui->leNote->text().trimmed().toStdString(),
+            ui->sbCapacity->value(), ui->dsbSpeed->value()};
 }
 void TrainDialog::accept()
 {
