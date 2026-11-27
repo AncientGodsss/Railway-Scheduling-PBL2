@@ -18,6 +18,7 @@ ScheduleDialog::ScheduleDialog(QWidget* parent, RailwaySystem* system)
         connect(ui->leFrom, &QLineEdit::editingFinished, this, &ScheduleDialog::autoCalcArrival);
         connect(ui->leTo, &QLineEdit::editingFinished, this, &ScheduleDialog::autoCalcArrival);
         connect(ui->teDep, &QTimeEdit::timeChanged, this, &ScheduleDialog::autoCalcArrival);
+        connect(ui->leTrainId, &QLineEdit::editingFinished, this, &ScheduleDialog::autoCalcArrival);
     }
 }
 
@@ -49,6 +50,16 @@ ScheduleDialog::~ScheduleDialog()
 {
     delete ui;
 }
+// Trả về hệ số thời gian theo loại tàu:
+//   Passenger (SE): x1.0 (cơ sở)
+//   Freight   (HH): x1.5 (tàu hàng chậm hơn ~50%)
+static double getSpeedFactor(const std::string& trainType)
+{
+    if (trainType == "Freight")
+        return 1.5;
+    return 1.0; // Passenger hoặc loại khác dùng thời gian chuẩn
+}
+
 void ScheduleDialog::autoCalcArrival()
 {
     if (!sys)
@@ -63,8 +74,24 @@ void ScheduleDialog::autoCalcArrival()
         ui->teArr->setReadOnly(false);
         return;
     }
+
+    // Tính hệ số tốc độ theo loại tàu
+    double factor = 1.0;
+    QString trainTypeLabel;
+    std::string trainIdStr = ui->leTrainId->text().trimmed().toUpper().toStdString();
+    const Train* t = sys->findTrain(trainIdStr);
+    if (t)
+    {
+        factor = getSpeedFactor(t->getTrainType());
+        if (t->getTrainType() == "Freight")
+            trainTypeLabel = " [Tàu hàng x1.5]";
+        else
+            trainTypeLabel = " [Tàu khách x1.0]";
+    }
+
     int dep = ui->teDep->time().hour() * 60 + ui->teDep->time().minute();
-    int arr = dep + result.travelTime;
+    int travelMin = static_cast<int>(result.travelTime * factor);
+    int arr = dep + travelMin;
     ui->teArr->setTime(QTime((arr / 60) % 24, arr % 60));
     ui->teArr->setReadOnly(true);
     ui->teArr->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -79,10 +106,11 @@ void ScheduleDialog::autoCalcArrival()
             path += QString::fromStdString(*node);
         }
     }
-    ui->lblCalcResult->setText(QString("%1\nGiờ đến: %2\nThời gian: %3 phút, khoảng cách: %4 km")
+    ui->lblCalcResult->setText(QString("%1\nGiờ đến: %2\nThời gian: %3 phút%4, khoảng cách: %5 km")
                                    .arg(path)
                                    .arg(QString::fromStdString(TimeUtils::minutesToDisplay(arr)))
-                                   .arg(result.travelTime)
+                                   .arg(travelMin)
+                                   .arg(trainTypeLabel)
                                    .arg(result.distance));
 }
 Schedule* ScheduleDialog::getSchedule() const
@@ -95,7 +123,13 @@ Schedule* ScheduleDialog::getSchedule() const
     {
         PathResult r = sys->shortestPath(start, dest, false);
         if (r.found)
-            arr = dep + r.travelTime;
+        {
+            double factor = 1.0;
+            const Train* t = sys->findTrain(ui->leTrainId->text().trimmed().toUpper().toStdString());
+            if (t)
+                factor = getSpeedFactor(t->getTrainType());
+            arr = dep + static_cast<int>(r.travelTime * factor);
+        }
     }
     return new Schedule(ui->leId->text().trimmed().toUpper().toStdString(),
                         ui->leTrainId->text().trimmed().toUpper().toStdString(), start, dest, dep, arr,
