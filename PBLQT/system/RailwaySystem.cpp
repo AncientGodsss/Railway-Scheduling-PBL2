@@ -547,20 +547,35 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
     string routeA = x->getDepartureStationId() + " -> " + x->getDestinationStationId();
     string routeB = y->getDepartureStationId() + " -> " + y->getDestinationStationId();
 
+    auto formatOverlap = [&](long long s1, long long e1, long long s2, long long e2) -> string {
+        long long oStart = (s1 > s2) ? s1 : s2;
+        long long oEnd = (e1 < e2) ? e1 : e2;
+        if (oStart >= oEnd) return "";
+        int mStart = static_cast<int>(oStart % 1440);
+        int mEnd = static_cast<int>(oEnd % 1440);
+        return TimeUtils::minutesToTime(mStart) + "-" + TimeUtils::minutesToTime(mEnd);
+    };
+
+    long long absDepA = TimeUtils::toAbsoluteMinutes(x->getDepartureDate(), x->getDepartureTime());
+    long long absArrA = TimeUtils::toAbsoluteMinutes(x->getDepartureDate(), x->getArrivalTime());
+    long long absDepB = TimeUtils::toAbsoluteMinutes(y->getDepartureDate(), y->getDepartureTime());
+    long long absArrB = TimeUtils::toAbsoluteMinutes(y->getDepartureDate(), y->getArrivalTime());
+    string overlapStr = formatOverlap(absDepA, absArrA, absDepB, absArrB);
+
     if (detector.sameTrain(*x, *y))
     {
-        reason = "SAME_TRAIN|" + x->getTrainId() + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
+        reason = "SAME_TRAIN|" + x->getTrainId() + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
         return true;
     }
     if (detector.sameEndToEndRoute(*x, *y))
     {
-        reason = "SAME_ROUTE|" + routeA + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
+        reason = "SAME_ROUTE|" + routeA + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
         return true;
     }
     string segment;
     if (detector.segmentConflict(*x, *y, segment))
     {
-        reason = "SEGMENT|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
+        reason = "SEGMENT|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
         return true;
     }
     if (detector.stationStopConflict(*x, *y, segment))
@@ -630,16 +645,16 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
     return false;
 }
 
-bool RailwaySystem::dispatch(const string& a, const string& b)
+string RailwaySystem::dispatch(const string& a, const string& b)
 {
     Schedule* x = findSchedule(a);
     Schedule* y = findSchedule(b);
     if (!x || !y)
-        return false;
+        return "ERROR|NOT_FOUND";
 
     string reason;
     if (!hasConflict(a, b, reason))
-        return false;
+        return "NONE";
 
     Schedule* higher = nullptr;
     Schedule* lower = nullptr;
@@ -655,6 +670,15 @@ bool RailwaySystem::dispatch(const string& a, const string& b)
         lower = x;
     }
 
+    string conflictDetail = "";
+    size_t p1 = reason.find('|');
+    if (p1 != string::npos)
+    {
+        size_t p2 = reason.find('|', p1 + 1);
+        if (p2 != string::npos)
+            conflictDetail = reason.substr(p1 + 1, p2 - p1 - 1);
+    }
+
     const int BUFFER = 30;
     long long higherArrival = TimeUtils::toAbsoluteMinutes(higher->getDepartureDate(), higher->getArrivalTime());
     long long lowerDeparture = TimeUtils::toAbsoluteMinutes(lower->getDepartureDate(), lower->getDepartureTime());
@@ -664,7 +688,10 @@ bool RailwaySystem::dispatch(const string& a, const string& b)
         shift = BUFFER;
 
     if (lower->getArrivalTime() + shift <= 1440 && dispatcher.shiftSchedule(*lower, shift))
-        return true;
+    {
+        string newTime = TimeUtils::minutesToTime(lower->getDepartureTime()) + "-" + TimeUtils::minutesToTime(lower->getArrivalTime());
+        return "OK_DELAY|" + conflictDetail + "|" + higher->getScheduleId() + "|" + higher->getTrainId() + "|" + lower->getScheduleId() + "|" + lower->getTrainId() + "|" + to_string(shift) + "|" + newTime;
+    }
 
     long long higherDeparture = TimeUtils::toAbsoluteMinutes(higher->getDepartureDate(), higher->getDepartureTime());
     long long lowerArrival = TimeUtils::toAbsoluteMinutes(lower->getDepartureDate(), lower->getArrivalTime());
@@ -674,12 +701,13 @@ bool RailwaySystem::dispatch(const string& a, const string& b)
         higher->shiftSchedule(-earlyShift);
         string label = higher->getTrainId() + " (Lịch " + higher->getScheduleId() + ": " + higher->getDepartureStationId() + "->" + higher->getDestinationStationId() + ")";
         dispatcher.addPriority(label, higher->getPriority());
-        return true;
+        string newTime = TimeUtils::minutesToTime(higher->getDepartureTime()) + "-" + TimeUtils::minutesToTime(higher->getArrivalTime());
+        return "OK_EARLY|" + conflictDetail + "|" + higher->getScheduleId() + "|" + higher->getTrainId() + "|" + lower->getScheduleId() + "|" + lower->getTrainId() + "|" + to_string(earlyShift) + "|" + newTime;
     }
 
     string label = lower->getTrainId() + " (Lịch " + lower->getScheduleId() + ": " + lower->getDepartureStationId() + "->" + lower->getDestinationStationId() + ")";
     dispatcher.addPriority(label, lower->getPriority());
-    return false;
+    return "QUEUE|" + conflictDetail + "|" + higher->getScheduleId() + "|" + higher->getTrainId() + "|" + lower->getScheduleId() + "|" + lower->getTrainId();
 }
 
 void RailwaySystem::setSchedulingStrategy(int type)

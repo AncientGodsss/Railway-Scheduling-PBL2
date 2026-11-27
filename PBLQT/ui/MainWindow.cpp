@@ -887,30 +887,32 @@ void MainWindow::onCheckConflict()
         QString tA = parts.size() > 3 ? parts[3] : "";
         QString schedB = parts.size() > 4 ? parts[4] : "";
         QString tB = parts.size() > 5 ? parts[5] : "";
+        QString overlapStr = parts.size() > 6 ? parts[6] : "";
+        QString overlapInfo = overlapStr.isEmpty() ? "" : QStringLiteral(u" (Khung giờ trùng: %1)").arg(overlapStr);
 
         if (type == "SAME_TRAIN")
         {
             display = QStringLiteral(u"⚠ Xung đột: Cùng tàu %1\n"
-                                      u"→ Thời gian chồng lấn!\n"
+                                      u"→ Thời gian chồng lấn%6!\n"
                                       u"  %2: %3\n"
                                       u"  %4: %5")
-                          .arg(detail, schedA, tA, schedB, tB);
+                          .arg(detail, schedA, tA, schedB, tB, overlapInfo);
         }
         else if (type == "SAME_ROUTE")
         {
             display = QStringLiteral(u"⚠ Xung đột: Cùng tuyến %1\n"
-                                      u"→ Thời gian chồng lấn!\n"
+                                      u"→ Thời gian chồng lấn%6!\n"
                                       u"  %2: %3\n"
                                       u"  %4: %5")
-                          .arg(detail, schedA, tA, schedB, tB);
+                          .arg(detail, schedA, tA, schedB, tB, overlapInfo);
         }
         else if (type == "SEGMENT")
         {
             display = QStringLiteral(u"⚠ Xung đột: Cùng đoạn đường %1\n"
-                                      u"→ Thời gian chồng lấn!\n"
+                                      u"→ Thời gian chồng lấn%6!\n"
                                       u"  %2: %3\n"
                                       u"  %4: %5")
-                          .arg(detail, schedA, tA, schedB, tB);
+                          .arg(detail, schedA, tA, schedB, tB, overlapInfo);
         }
         else if (type == "STATION_STOP")
         {
@@ -977,19 +979,50 @@ void MainWindow::onDispatch()
         return;
     }
 
-    bool resolved = system.dispatch(idA, idB);
-    if (resolved)
+    string res = system.dispatch(idA, idB);
+    QStringList parts = QString::fromStdString(res).split("|");
+    QString status = parts.size() > 0 ? parts[0] : "";
+    QString detail = parts.size() > 1 ? parts[1] : "";
+    QString highId = parts.size() > 2 ? parts[2] : "";
+    QString highTrain = parts.size() > 3 ? parts[3] : "";
+    QString lowId = parts.size() > 4 ? parts[4] : "";
+    QString lowTrain = parts.size() > 5 ? parts[5] : "";
+
+    if (status == "OK_DELAY")
     {
+        QString shift = parts.size() > 6 ? parts[6] : "";
+        QString newTime = parts.size() > 7 ? parts[7] : "";
         ui->conflictOutput->setText(
             QStringLiteral(u"✅ ĐIỀU PHỐI THÀNH CÔNG!\n"
-                           u"Lịch trình có mức ưu tiên thấp hơn đã được lùi giờ hợp lý để tránh xung đột."));
+                           u"• Vị trí/Tuyến xung đột: %1\n"
+                           u"• Lịch ưu tiên giữ nguyên: %2 (Tàu %3)\n"
+                           u"• Lịch bị điều phối: %4 (Tàu %5) → Lùi +%6 phút (Giờ mới: %7)")
+                .arg(detail, highId, highTrain, lowId, lowTrain, shift, newTime));
     }
-    else
+    else if (status == "OK_EARLY")
+    {
+        QString shift = parts.size() > 6 ? parts[6] : "";
+        QString newTime = parts.size() > 7 ? parts[7] : "";
+        ui->conflictOutput->setText(
+            QStringLiteral(u"✅ ĐIỀU PHỐI THÀNH CÔNG!\n"
+                           u"• Vị trí/Tuyến xung đột: %1\n"
+                           u"• Lịch được đẩy lên sớm: %2 (Tàu %3) → Sớm -%4 phút (Giờ mới: %5)\n"
+                           u"• Lịch giữ nguyên: %6 (Tàu %7)")
+                .arg(detail, highId, highTrain, shift, newTime, lowId, lowTrain));
+    }
+    else if (status == "QUEUE")
     {
         ui->conflictOutput->setText(
             QStringLiteral(u"⚠ KHÔNG THỂ DỜI GIỜ TRONG NGÀY (vượt quá 24:00)!\n"
-                           u"Tàu có mức ưu tiên thấp hơn đã được tự động đưa vào HÀNG ĐỢI ƯU TIÊN (MaxHeap).\n"
-                           u"👉 Vui lòng mở tab 'Hàng chờ' để xem chi tiết và cấp phép xuất bến khi đường ray trống."));
+                           u"• Vị trí/Tuyến xung đột: %1\n"
+                           u"• Lịch ưu tiên giữ nguyên: %2 (Tàu %3)\n"
+                           u"• Lịch bị hoãn: %4 (Tàu %5) → Đã đưa vào HÀNG ĐỢI ƯU TIÊN (MaxHeap).\n"
+                           u"👉 Vui lòng mở tab 'Hàng chờ' để xem chi tiết và cấp phép xuất bến khi đường ray trống.")
+                .arg(detail, highId, highTrain, lowId, lowTrain));
+    }
+    else
+    {
+        ui->conflictOutput->setText(QStringLiteral(u"❌ Không thể thực hiện điều phối."));
     }
     refreshScheduleTable();
 }

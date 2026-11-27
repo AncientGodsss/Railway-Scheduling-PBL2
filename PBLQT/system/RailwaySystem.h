@@ -77,7 +77,7 @@ public:
     PathResult shortestPath(const string& start, const string& target, bool byDistance) const;
 
     bool hasConflict(const string& a, const string& b, string& reason) const;
-    bool dispatch(const string& a, const string& b);
+    string dispatch(const string& a, const string& b);
 
     void setSchedulingStrategy(int type);
 
