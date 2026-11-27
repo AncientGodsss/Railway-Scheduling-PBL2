@@ -220,7 +220,6 @@ void MainWindow::fillScheduleRow(QTableWidget* t, Schedule* s)
     t->setItem(row, 7, new QTableWidgetItem(QString::number(s->getPriority())));
     t->setItem(row, 8, new QTableWidgetItem(translateStatus(s->getStatus())));
 
-    // Kiểm tra trạng thái tàu - cảnh báo nếu tàu tạm ngưng hoặc bảo trì
     Train* train = system.findTrain(s->getTrainId());
     bool trainProblem = false;
     QString trainWarning;
@@ -254,14 +253,12 @@ void MainWindow::fillScheduleRow(QTableWidget* t, Schedule* s)
             if (item)
                 item->setBackground(warnBg);
         }
-        // Cập nhật cột trạng thái để hiển thị cảnh báo
         QTableWidgetItem* statusItem = t->item(row, 8);
         if (statusItem)
         {
             statusItem->setText(statusItem->text() + " " + trainWarning);
             statusItem->setForeground(warnFg);
         }
-        // Tô đỏ cột mã tàu
         QTableWidgetItem* trainItem = t->item(row, 1);
         if (trainItem)
             trainItem->setForeground(warnFg);
@@ -880,7 +877,6 @@ void MainWindow::onCheckConflict()
     string reason;
     if (system.hasConflict(idA, idB, reason))
     {
-        // Parse reason: TYPE|detail|idA|timeA|idB|timeB
         QString display;
         QString qReason = QString::fromStdString(reason);
         QStringList parts = qReason.split("|");
@@ -926,7 +922,6 @@ void MainWindow::onCheckConflict()
         }
         else if (type == "STATION_OVERLOAD")
         {
-            // detail: stationId, parts[2]: maxTracks, parts[3]: currentTrains, parts[4]: schedA...
             QString stationId = detail;
             QString maxTracks = parts.size() > 2 ? parts[2] : "";
             QString trainCount = parts.size() > 3 ? parts[3] : "";

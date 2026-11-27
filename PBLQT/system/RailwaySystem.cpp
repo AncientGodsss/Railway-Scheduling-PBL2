@@ -542,7 +542,6 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
         return false;
     }
 
-    // Chuẩn bị thông tin thời gian
     string timeA = TimeUtils::minutesToTime(x->getDepartureTime()) + "-" + TimeUtils::minutesToTime(x->getArrivalTime());
     string timeB = TimeUtils::minutesToTime(y->getDepartureTime()) + "-" + TimeUtils::minutesToTime(y->getArrivalTime());
     string routeA = x->getDepartureStationId() + " -> " + x->getDestinationStationId();
@@ -566,12 +565,9 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
     }
     if (detector.stationStopConflict(*x, *y, segment))
     {
-        // Kiểm tra số đường ray của ga
         const Station* st = findStation(segment);
         int trackLimit = st ? st->getNumberOfTracks() : 1;
 
-        // Đếm tổng số tàu dừng tại ga này trong khoảng thời gian trùng nhau
-        // Thu thập khoảng thời gian trùng nhau giữa x và y tại ga segment
         long long overlapStart = -1, overlapEnd = -1;
         const StopList& stopsX = x->getStops();
         const StopList& stopsY = y->getStops();
@@ -597,7 +593,6 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
             if (overlapStart != -1) break;
         }
 
-        // Đếm xem trong toàn hệ thống có bao nhiêu lịch đỗ tại ga 'segment' trong khoảng [overlapStart, overlapEnd]
         int overlappingTrains = 0;
         for (int sIdx = 0; sIdx < getScheduleCount(); ++sIdx)
         {
@@ -622,13 +617,11 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
 
         if (overlappingTrains > trackLimit)
         {
-            // Vượt quá sức chứa đường ray của ga!
             reason = "STATION_OVERLOAD|" + segment + "|" + to_string(trackLimit) + "|" + to_string(overlappingTrains) + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
             return true;
         }
         else if (trackLimit <= 1)
         {
-            // Ga chỉ có 1 đường ray thì trùng nhau là xung đột
             reason = "STATION_STOP|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
             return true;
         }

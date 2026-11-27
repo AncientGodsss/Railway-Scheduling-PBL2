@@ -50,9 +50,6 @@ ScheduleDialog::~ScheduleDialog()
 {
     delete ui;
 }
-// Trả về hệ số thời gian theo loại tàu:
-//   Passenger (SE): x1.0 (cơ sở)
-//   Freight   (HH): x1.5 (tàu hàng chậm hơn ~50%)
 static double getSpeedFactor(const std::string& trainType)
 {
     if (trainType == "Freight")
@@ -75,7 +72,6 @@ void ScheduleDialog::autoCalcArrival()
         return;
     }
 
-    // Tính hệ số tốc độ theo loại tàu
     double factor = 1.0;
     QString trainTypeLabel;
     std::string trainIdStr = ui->leTrainId->text().trimmed().toUpper().toStdString();
