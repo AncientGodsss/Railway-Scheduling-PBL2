@@ -131,7 +131,11 @@ public:
 
                 if ((sameDirection || oppositeDirection) && timeOverlapped)
                 {
-                    segment = firstStartId + "-" + firstEndId;
+                    long long oStart = (firstSegmentStart > secondSegmentStart) ? firstSegmentStart : secondSegmentStart;
+                    long long oEnd = (firstSegmentEnd < secondSegmentEnd) ? firstSegmentEnd : secondSegmentEnd;
+                    int mStart = static_cast<int>(oStart % 1440);
+                    int mEnd = static_cast<int>(oEnd % 1440);
+                    segment = firstStartId + "-" + firstEndId + " (" + TimeUtils::minutesToTime(mStart) + "-" + TimeUtils::minutesToTime(mEnd) + ")";
 
                     return true;
                 }

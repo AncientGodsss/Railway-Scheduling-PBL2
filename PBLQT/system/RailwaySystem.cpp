@@ -567,15 +567,15 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
         reason = "SAME_TRAIN|" + x->getTrainId() + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
         return true;
     }
-    if (detector.sameEndToEndRoute(*x, *y))
-    {
-        reason = "SAME_ROUTE|" + routeA + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
-        return true;
-    }
     string segment;
     if (detector.segmentConflict(*x, *y, segment))
     {
-        reason = "SEGMENT|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
+        reason = "SEGMENT|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|";
+        return true;
+    }
+    if (detector.sameEndToEndRoute(*x, *y))
+    {
+        reason = "SAME_ROUTE|" + routeA + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
         return true;
     }
     if (detector.stationStopConflict(*x, *y, segment))
