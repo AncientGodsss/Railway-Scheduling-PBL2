@@ -12,6 +12,9 @@ ScheduleDialog::ScheduleDialog(QWidget* parent, RailwaySystem* system)
     ui->teArr->setReadOnly(sys != nullptr);
     ui->teArr->setButtonSymbols(QAbstractSpinBox::NoButtons);
     ui->btnCalc->setVisible(sys != nullptr);
+    ui->lblCalcResult->setVisible(false);
+    if (ui->formLayout)
+        ui->formLayout->setRowVisible(7, false);
     if (sys)
     {
         connect(ui->btnCalc, &QPushButton::clicked, this, &ScheduleDialog::autoCalcArrival);
@@ -67,7 +70,6 @@ void ScheduleDialog::autoCalcArrival()
     PathResult result = sys->shortestPath(from.toStdString(), to.toStdString(), false);
     if (!result.found)
     {
-        ui->lblCalcResult->setText("Không tìm thấy đường đi. Hãy kiểm tra mã ga.");
         ui->teArr->setReadOnly(false);
         return;
     }
@@ -91,23 +93,6 @@ void ScheduleDialog::autoCalcArrival()
     ui->teArr->setTime(QTime((arr / 60) % 24, arr % 60));
     ui->teArr->setReadOnly(true);
     ui->teArr->setButtonSymbols(QAbstractSpinBox::NoButtons);
-    QString path;
-    for (int i = 0; i < result.path.getSize(); ++i)
-    {
-        const std::string* node = result.path.get(i);
-        if (node)
-        {
-            if (!path.isEmpty())
-                path += " -> ";
-            path += QString::fromStdString(*node);
-        }
-    }
-    ui->lblCalcResult->setText(QString("%1\nGiờ đến: %2\nThời gian: %3 phút%4, khoảng cách: %5 km")
-                                   .arg(path)
-                                   .arg(QString::fromStdString(TimeUtils::minutesToDisplay(arr)))
-                                   .arg(travelMin)
-                                   .arg(trainTypeLabel)
-                                   .arg(result.distance));
 }
 Schedule* ScheduleDialog::getSchedule() const
 {
