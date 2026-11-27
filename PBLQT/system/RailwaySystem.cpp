@@ -573,11 +573,6 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
         reason = "SEGMENT|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|";
         return true;
     }
-    if (detector.sameEndToEndRoute(*x, *y))
-    {
-        reason = "SAME_ROUTE|" + routeA + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
-        return true;
-    }
     if (detector.stationStopConflict(*x, *y, segment))
     {
         const Station* st = findStation(segment);
@@ -638,6 +633,14 @@ bool RailwaySystem::hasConflict(const string& a, const string& b, string& reason
         else if (trackLimit <= 1)
         {
             reason = "STATION_STOP|" + segment + "|" + a + "|" + timeA + "|" + b + "|" + timeB;
+            return true;
+        }
+    }
+    if (x->getStops().getSize() == 0 || y->getStops().getSize() == 0)
+    {
+        if (detector.sameEndToEndRoute(*x, *y))
+        {
+            reason = "SAME_ROUTE|" + routeA + "|" + a + "|" + timeA + "|" + b + "|" + timeB + "|" + overlapStr;
             return true;
         }
     }
